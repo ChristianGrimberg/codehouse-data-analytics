@@ -1,0 +1,19 @@
+name: Publish to PowerShell Gallery
+
+on:
+    workflow_dispatch:
+    push:
+      tags:
+        - '*'
+
+jobs:
+  publish:
+    name: Publish Release to PowerShell Gallery
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publishing
+        run: ./config/make.ps1 -Task Init, Push -ApiKey ${{ secrets.PSGALLERY }}
+        shell: pwsh

@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build & Publish SQL Server Project",
+			"type": "shell",
+			"command": "dotnet clean ./Modules/Timesheet.Database/Timesheet.Database.sqlproj && dotnet build ./Modules/Timesheet.Database/Timesheet.Database.sqlproj /p:RunSqlCodeAnalysis=true /p:NetCoreBuild=true -v:detailed && dotnet publish ./Modules/Timesheet.Database/Timesheet.Database.sqlproj --no-build --output ./Modules/Timesheet.Database/publish/ -v:detailed",
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": "true"
+			},
+			"detail": "Build & Publish SQL Server Project"
+		}
+	]
+}

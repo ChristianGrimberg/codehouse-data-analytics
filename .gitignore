@@ -1,0 +1,59 @@
+# ======================
+# Operating System Files
+# ======================
+
+# OSX
+# ===
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+# =======
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# ================
+# Encryption Files
+# ================
+
+# Credential files
+*.key
+
+# ============
+# Module Files
+# ============
+
+# Manifiest files
+#Modules/*/*.psd1
+
+# .NET Build results
+**/[Dd]ebug/**
+**/[Rr]elease/**
+**/x64/**
+**/[Bb]in/**
+**/[Oo]bj/**
+*.pdb
+core
+
+# =============
+# Local Testing
+# =============
+
+# Local
+tests/**
+system32.psd1
+
+# ===========
+# SQL Reports
+# ===========
+
+**/Reports/**

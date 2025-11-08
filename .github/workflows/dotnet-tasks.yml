@@ -1,0 +1,121 @@
+name: Run .NET Analysis, Build, Publish & PowerShell Import
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '**.cs'
+    - '**.csproj'
+    - '**.sln'
+    - '**.ps1'
+    - '**.psm1'
+    - '**.psd1'
+    - '.editorconfig'
+    - '.global.json'
+    - './github/workflows/dotnet-tasks.yml'
+
+jobs:
+  set-git-environment:
+    runs-on: ubuntu-latest
+    name: Set Git environment
+
+    steps:
+      - name: Set Git environment variables
+        run: |
+          echo "GIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Use Git environment variables
+        run: |
+          echo "GIT_SHA=${GIT_SHA}"
+          echo "GIT_BRANCH=${GIT_BRANCH}"
+
+  dotnet-analysis-windows:
+    name: Code analysis on Windows Server
+    runs-on: windows-latest
+    needs: [set-git-environment]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run dotnet analysis with CLI
+        run: .\config\make.ps1 -Task Init, Analyze
+        shell: powershell
+
+  dotnet-analysis-linux:
+    name: Code analysis on Linux
+    runs-on: ubuntu-latest
+    needs: [set-git-environment]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet analysis with CLI
+        run: ./config/make.ps1 -Task Init, Analyze
+        shell: pwsh
+
+  dotnet-build-windows:
+    name: Build Class Libraries on Windows Server
+    runs-on: windows-latest
+    needs: [dotnet-analysis-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet build with CLI
+        run: .\config\make.ps1 -Task Init, Solution, Project, Clean, Restore, Build
+        shell: powershell
+
+  dotnet-build-linux:
+    name: Build Class Libraries on Linux
+    runs-on: ubuntu-latest
+    needs: [dotnet-analysis-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet build with CLI
+        run: ./config/make.ps1 -Task Init, Solution, Project, Clean, Restore, Build
+        shell: pwsh
+
+  dotnet-publish-windows:
+    name: Publish Class Libraries on Windows Server
+    runs-on: windows-latest
+    needs: [dotnet-build-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: .\config\make.ps1 -Task Init, Solution, Project, Clean, Publish
+        shell: powershell
+
+  dotnet-publish-linux:
+
+    name: Publish Class Libraries on Linux
+    runs-on: ubuntu-latest
+    needs: [dotnet-build-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: ./config/make.ps1 -Task Init, Solution, Project, Clean, Publish
+        shell: pwsh
+
+  pwsh-import-windows:
+    name: Import PowerShell modules on Windows Server
+    runs-on: windows-latest
+    needs: [dotnet-publish-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run import modules with Windows PowerShell
+        run: .\config\make.ps1 -Task Init, Import
+        shell: powershell
+
+  pwsh-import-linux:
+    name: Import PowerShell modules on Linux
+    runs-on: ubuntu-latest
+    needs: [dotnet-publish-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run import modules with PowerShell Core
+        run: ./config/make.ps1 -Task Init, Import
+        shell: pwsh

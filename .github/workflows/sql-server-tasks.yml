@@ -1,0 +1,118 @@
+name: Run SQL Server Projects Analysis, Profile, Build, Artifact & Publish
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '**.sql'
+    - '**.sqlproj'
+    - '**.sln'
+    - '**.publish.xml'
+    - '**.dacpac'
+    - '**.bacpac'
+    - '.global.json'
+    - './github/workflows/sql-server-tasks.yml'
+
+jobs:
+  set-git-environment:
+    runs-on: ubuntu-latest
+    name: Set Git environment
+
+    steps:
+      - name: Set Git environment variables
+        run: |
+          echo "GIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Use Git environment variables
+        run: |
+          echo "GIT_SHA=${GIT_SHA}"
+          echo "GIT_BRANCH=${GIT_BRANCH}"
+
+  sql-analyze-windows:
+    name: Code analysis on Windows Server
+    runs-on: windows-latest
+    needs: [set-git-environment]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet analysis with CLI
+        run: .\config\make.ps1 -Task Init, Analyze
+        shell: powershell
+
+  sql-analyze-linux:
+    name: Code analysis on Linux
+    runs-on: ubuntu-latest
+    needs: [set-git-environment]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet analysis with CLI
+        run: ./config/make.ps1 -Task Init, Analyze
+        shell: pwsh
+
+  sql-build-windows:
+    name: Build SQL Server projects on Windows Server
+    runs-on: windows-latest
+    needs: [sql-analyze-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet build with CLI
+        run: .\config\make.ps1 -Task Init, Profile, Solution, Project, Clean, Restore, Build
+        shell: powershell
+
+  sql-build-linux:
+    name: Build SQL Server projects on Linux
+    runs-on: ubuntu-latest
+    needs: [sql-analyze-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet build with CLI
+        run: ./config/make.ps1 -Task Init, Profile, Solution, Project, Clean, Restore, Build
+        shell: pwsh
+
+  sql-publish-windows:
+    name: Publish SQL Server artifacts from Windows Server
+    runs-on: windows-latest
+    needs: [sql-build-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: .\config\make.ps1 -Task Init, Profile, Artifact, SqlPublish
+        shell: powershell
+
+  sql-publish-linux:
+    name: Publish SQL Server artifacts from Linux
+    runs-on: ubuntu-latest
+    needs: [sql-build-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: ./config/make.ps1 -Task Init, Profile, Artifact, SqlPublish
+        shell: pwsh
+
+  pwsh-import-windows:
+    name: Import PowerShell modules on Windows Server
+    runs-on: windows-latest
+    needs: [sql-publish-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run import modules with Windows PowerShell
+        run: .\config\make.ps1 -Task Init, Import
+        shell: powershell
+
+  pwsh-import-linux:
+    name: Import PowerShell modules on Linux
+    runs-on: ubuntu-latest
+    needs: [sql-publish-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run import modules with PowerShell Core
+        run: ./config/make.ps1 -Task Init, Import
+        shell: pwsh

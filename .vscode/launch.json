@@ -1,0 +1,18 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Code Validation & Import Modules",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/config/make.ps1",
+            "args": [
+                "-Task Init, Analyze, Workload, Format, Profile, Solution, Project, Restore, Build, Clean, Artifact, Publish, SqlPublish, Import"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

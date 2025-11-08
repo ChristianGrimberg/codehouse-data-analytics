@@ -1,0 +1,70 @@
+{
+  "organization": {
+    "name" : "Coderhouse Data Analytics",
+    "team" : "https://github.com/ChristianGrimberg",
+    "copyright": "(c) 2025 Christian Grimberg. All rights reserved"
+  },
+  "powershell": {
+    "module": "0.0.0.1",
+    "guid": "e4ace8af-11d5-48f3-87bc-8cec589b0157",
+    "version": "5.1",
+    "dependencies" : {
+      "Novocap.PowerShell.Logging.Management" : {
+        "version": "0.0.2.5",
+        "modules" : [
+          "Templates"
+        ]
+      }
+    }
+  },
+  "dotnet": {
+    "sdk": "9",
+    "runtime": "net48",
+    "version": "0.0.0.1",
+    "modules": [
+      "Templates"
+    ],
+    "common" : {
+      "ImplicitUsings": "disable",
+      "Nullable": "disable",
+      "EnableDefaultCompileItems": "false",
+      "AnalysisLevel": "latest-All",
+      "TreatWarningsAsErrors": "true",
+      "EnableNETAnalyzers": "true",
+      "EnforceCodeStyleInBuild": "true",
+      "CodeAnalysisTreatWarningsAsErrors": "true"
+    },
+    "packages" : {
+      "System.IO.Compression.ZipFile" : {
+        "version": "4.3.0",
+        "modules": [
+          "Templates"
+        ]
+      }
+    }
+  },
+  "sql": {
+    "connectionString": "Server=localhost,1433;Database=timesheet.interface;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;",
+    "version": "0.0.0.1",
+    "dsp": "Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider",
+    "modelCollation": "1033, CI",
+    "runSqlCodeAnalysis": "False",
+    "modules": [
+      "Templates"
+    ],
+    "packages" : {
+      "Microsoft.SqlPackage" : {
+        "version": "170.2.70",
+        "modules": [
+          "Templates"
+        ]
+      },
+      "Microsoft.SqlServer.DacFx" : {
+        "version": "170.2.70",
+        "modules": [
+          "Templates"
+        ]
+      }
+    }
+  }
+}

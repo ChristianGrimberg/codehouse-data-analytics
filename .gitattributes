@@ -1,0 +1,26 @@
+*.dll                           binary
+*.ps1                           text                            eol=crlf
+*.psm1                          text                            eol=crlf
+*.psd1                          text                            eol=crlf
+*.psc1                          text                            eol=crlf
+*.ps1xml                        text                            eol=crlf
+*.clixml                        text                            eol=crlf
+*.xml                           text                            eol=crlf
+*.txt                           text                            eol=crlf
+*.css                           text                            eol=crlf
+*.cs                            text                            eol=crlf
+*.md                            text                            eol=crlf
+Dockerfile                      text                            eol=crlf
+*.json                          text                            eol=crlf
+*.yml                           text                            eol=crlf
+.gitignore                      export-ignore
+.gitattributes                  export-ignore
+.github/                        export-ignore
+.vscode/                        export-ignore
+.devcontainer/                  export-ignore
+build/                          export-ignore
+config/                         export-ignore
+README.md                       export-ignore
+PSScriptAnalyzerSettings.psd1   export-ignore
+Modules/*                       linguist-vendored
+**/*.ps1                        linguist-language=powershell

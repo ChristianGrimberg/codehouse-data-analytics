@@ -1,0 +1,61 @@
+{
+    // Environment style
+    "workbench.colorTheme": "Panda Syntax",
+    "editor.renderWhitespace": "boundary",
+    "editor.fontSize": 12,
+    "markdown.styles": [
+        ".vscode/extensions/markdown-styles.css"
+    ],
+    "files.defaultLanguage": "powershell",
+    // Git behaviour
+    "git.autofetch": true,
+    "git.autofetchPeriod": 60,
+    "git.confirmSync": false,
+    "git.enableCommitSigning": true,
+    // Terminal behaviour
+    "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+    "terminal.integrated.defaultProfile.linux": "pwsh",
+    "terminal.integrated.defaultProfile.osx": "PowerShell",
+    "terminal.integrated.fontSize": 12,
+    // Powershell script analysis
+    "powershell.scriptAnalysis.settingsPath": "./PSScriptAnalyzerSettings.psd1",
+    "powershell.scriptAnalysis.enable": true,
+    // PowerShell behaviour
+    "powershell.codeFormatting.preset": "OTBS",
+    "powershell.codeFormatting.whitespaceBeforeOpenBrace": true,
+    "powershell.codeFormatting.whitespaceBeforeOpenParen": true,
+    "powershell.codeFormatting.whitespaceAroundOperator": true,
+    "powershell.codeFormatting.whitespaceAfterSeparator": true,
+    "powershell.integratedConsole.showOnStartup": true,
+    // .NET settings
+    "terminal.integrated.env.windows": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "true"
+    },
+    "terminal.integrated.env.linux": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "true"
+    },
+    "terminal.integrated.env.osx": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "true"
+    },
+    // Extensions settings
+    "omnisharp.enableEditorConfigSupport": true,
+    "csharp.suppressHiddenDiagnostics": true,
+    "csharp.showOmnisharpLogOnError": false,
+    "csharp.suppressBuildAssetsNotification": true,
+    "csharp.suppressDotnetInstallWarning": true,
+    "csharp.suppressDotnetRestoreNotification": true,
+    "csharp.suppressProjectJsonWarning": true,
+    "omnisharp.useModernNet": true,
+    "omnisharp.disableMSBuildDiagnosticWarning": true,
+    "dotnet.inlayHints.enableInlayHintsForParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForLiteralParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForIndexerParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForObjectCreationParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForOtherParameters": true,
+    "csharp.inlayHints.enableInlayHintsForTypes": true,
+    "csharp.inlayHints.enableInlayHintsForImplicitVariableTypes": true,
+    "csharp.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
+    "csharp.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "dotnet.defaultSolution": "Novocap.PowerShell.Timesheet.Management.sln"
+}
