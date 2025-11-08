@@ -1,0 +1,10 @@
+CREATE TABLE [dbo].[Nombre_Producto] (
+    [id_PRODUCT_NAME] INT PRIMARY KEY IDENTITY(1,1),
+    [PRODUCT_NAME] NVARCHAR(MAX) NULL
+);
+
+INSERT INTO [dbo].[Nombre_Producto] ([PRODUCT_NAME])
+VALUES
+(
+    ''
+);

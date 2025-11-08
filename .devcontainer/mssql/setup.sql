@@ -1,2 +1,2 @@
-CREATE DATABASE [Nike_m];
+CREATE DATABASE [Nike_Sabado];
 GO
