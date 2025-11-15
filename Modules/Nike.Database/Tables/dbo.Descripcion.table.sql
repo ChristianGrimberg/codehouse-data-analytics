@@ -5,6 +5,5 @@ CREATE TABLE [dbo].[Descripcion] (
 
 INSERT INTO [dbo].[Descripcion] ([DESCRIPTION])
 VALUES
-(
-    ''
-);
+('');
+GO

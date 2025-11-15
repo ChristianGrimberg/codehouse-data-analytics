@@ -18,6 +18,24 @@ CREATE TABLE [dbo].[ventas_nike] (
     [Costo Unitario] DECIMAL(10, 2),
     [Operating Margin] DECIMAL(10, 2)
 );
+GO
+
+ALTER TABLE [dbo].[ventas_nike]
+ADD CONSTRAINT FK_Categoria
+    FOREIGN KEY (id_Category) REFERENCES Categorias (id_Category),
+
+    CONSTRAINT FK_Ciudad
+    FOREIGN KEY (id_City) REFERENCES Ciudad (id_City),
+
+    CONSTRAINT FK_Descripcion
+    FOREIGN KEY (id_DESCRIPTION) REFERENCES Descripcion (id_DESCRIPTION),
+
+    CONSTRAINT FK_Estado
+    FOREIGN KEY (id_State) REFERENCES Estado (id_State),
+
+    CONSTRAINT FK_Producto
+    FOREIGN KEY (id_PRODUCT_NAME) REFERENCES Nombre_Producto (id_PRODUCT_NAME);
+GO
 
 INSERT INTO [dbo].[ventas_nike] (
     INVOICE,
