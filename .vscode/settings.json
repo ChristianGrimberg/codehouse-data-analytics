@@ -57,5 +57,5 @@
     "csharp.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
     "csharp.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
     "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
-    "dotnet.defaultSolution": "Novocap.PowerShell.Timesheet.Management.sln"
+    "dotnet.defaultSolution": "coderhouse-data-analytics.sln"
 }
