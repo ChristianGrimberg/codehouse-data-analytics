@@ -29,7 +29,7 @@
 						"emptyPasswordInput": false,
 						"savePassword": true,
 						"trustServerCertificate": true,
-						"profileName": "mssql-container"
+						"profileName": "codehouse-data-analytics"
 					}
 				]
 			},
