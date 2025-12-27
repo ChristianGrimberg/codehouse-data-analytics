@@ -1,12 +1,15 @@
 #!/bin/bash
 dacpac="false"
 sqlfiles="false"
-SApassword=$1
-dacpath=$2
-sqlpath=$3
+dacpath=$1
+sqlpath=$2
+
+# Load SA_PASSWORD from .env file
+export $(grep -v '^#' .devcontainer/.env | xargs)
+SApassword=$MSSQL_SA_PASSWORD
 
 echo "SELECT * FROM SYS.DATABASES" | dd of=testsqlconnection.sql
-for i in {1..60};
+for i in {1..30};
 do
     /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i testsqlconnection.sql > /dev/null
     if [ $? -eq 0 ]

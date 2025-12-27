@@ -1,13 +1,17 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-mssql
 {
-	"name": "Coderhouse SQL - C# - PowerShell",
+	"name": "Coderhouse - Data Analytics",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		}
+	},
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -18,12 +22,13 @@
 				"mssql.connections": [
 					{
 						"server": "localhost,1433",
-						"database": "",
+						"database": "master",
 						"authenticationType": "SqlLogin",
 						"user": "sa",
-						"password": "P@ssw0rd",
+						"password": "${env:MSSQL_SA_PASSWORD}",
 						"emptyPasswordInput": false,
-						"savePassword": false,
+						"savePassword": true,
+						"trustServerCertificate": true,
 						"profileName": "mssql-container"
 					}
 				]
@@ -31,33 +36,29 @@
 			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"ms-vscode.powershell",
 				"eamodio.gitlens",
+				"github.copilot-chat",
 				"github.vscode-pull-request-github",
-				"ms-dotnettools.csharp",
+				"hediet.vscode-drawio",
 				"ms-dotnettools.csdevkit",
+				"ms-dotnettools.csharp",
 				"ms-dotnettools.vscode-dotnet-runtime",
-				"GitHub.copilot-chat",
-				"ms-mssql.mssql"
+				"ms-mssql.mssql",
+				"ms-vscode.powershell"
 			]
 		}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5000, 5001],
+	// "forwardPorts": ["db:1433"],
 	// "portsAttributes": {
 	//		"5001": {
 	//			"protocol": "https"
 	//		}
 	// }
 
-	// postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
-	"postCreateCommand": "bash .devcontainer/mssql/postCreateCommand.sh 'P@ssw0rd' './bin/Debug/' './.devcontainer/mssql/'",
-	"features": {
-		"ghcr.io/devcontainers/features/powershell:1": {
-			"version": "latest"
-		}
-	}
+	// postCreateCommand.sh parameters: $1=dacpac path, $2=sql script(s) path
+	"postCreateCommand": "bash .devcontainer/mssql/postCreateCommand.sh './bin/Debug/' './.devcontainer/mssql/'"
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
