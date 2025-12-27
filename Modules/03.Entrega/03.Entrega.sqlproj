@@ -4,6 +4,7 @@
 	<Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.2.70" />
+		<None Include="03.Entrega.publish.xml" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>03.Entrega</PackageId>
@@ -12,7 +13,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{3591D9A6-A5EB-458A-8185-BF99E14648B8}</ProjectGuid>
+		<ProjectGuid>{E1D3A502-D861-4307-BA74-A21EB7F548E4}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>

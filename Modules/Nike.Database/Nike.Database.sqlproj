@@ -5,6 +5,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.2.70" />
 		<Folder Include="Tables" />
+		<None Include="Nike.Database.publish.xml" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>Nike.Database</PackageId>
@@ -13,7 +14,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{1F5A059E-011E-4DC7-801C-420CBE0DF116}</ProjectGuid>
+		<ProjectGuid>{C1EA3FE6-09C5-4359-880E-E6380D560F71}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>

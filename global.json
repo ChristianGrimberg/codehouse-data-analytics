@@ -12,14 +12,13 @@
       "Novocap.PowerShell.Logging.Management" : {
         "version": "0.0.2.5",
         "modules" : [
-          "03.Entrega",
-          "Nike.Database"
+          "Templates"
         ]
       }
     }
   },
   "dotnet": {
-    "sdk": "9",
+    "sdk": "8",
     "runtime": "net48",
     "version": "0.0.0.1",
     "modules": [
