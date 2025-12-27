@@ -11,15 +11,13 @@ CREATE TABLE [dbo].[Categoria2] (
 GO
 
 -- 📌 Agregar una columna
-ALTER TABLE [dbo].[Categorias2] (
-    ADD COLUMN [cantidad] INT
-);
+ALTER TABLE [dbo].[Categoria2]
+    ADD [cantidad] INT;
 GO
 
 -- 📌 Eliminar una columna
-ALTER TABLE [dbo].[Categorias2] (
-    DROP COLUMN [cantidad] INT
-);
+ALTER TABLE [dbo].[Categoria2]
+    DROP COLUMN [cantidad];
 GO
 
 -- 📌 Ingresar registros
