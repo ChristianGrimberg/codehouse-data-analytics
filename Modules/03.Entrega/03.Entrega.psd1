@@ -18,7 +18,7 @@ ModuleVersion = '0.0.0.1'
 CompatiblePSEditions = 'Desktop', 'Core'
 
 # ID used to uniquely identify this module
-GUID = 'fe3e8062-c050-4f99-a57e-e00266ca3eb6'
+GUID = '7964bee6-471e-4d3c-ad66-fd4ac3465213'
 
 # Author of this module
 Author = 'https://github.com/ChristianGrimberg'

@@ -18,7 +18,7 @@
     }
   },
   "dotnet": {
-    "sdk": "8",
+    "sdk": "10",
     "runtime": "net48",
     "version": "0.0.0.1",
     "modules": [
@@ -41,6 +41,13 @@
           "Templates"
         ]
       }
+    },
+    "NuGet.Build.Tasks.Pack" : {
+      "version": "6.9.1",
+      "modules": [
+        "03.Entrega",
+        "Nike.Database"
+      ]
     }
   },
   "sql": {

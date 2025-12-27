@@ -13,7 +13,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{E1D3A502-D861-4307-BA74-A21EB7F548E4}</ProjectGuid>
+		<ProjectGuid>{A3ABB809-3908-44FE-865D-BE8FAB4D69A7}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
