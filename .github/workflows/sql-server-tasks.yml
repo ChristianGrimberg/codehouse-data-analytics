@@ -29,10 +29,18 @@ jobs:
           echo "GIT_SHA=${GIT_SHA}"
           echo "GIT_BRANCH=${GIT_BRANCH}"
 
+  setup-dotnet-sdk:
+    name: Setup .NET
+    uses: actions/setup-dotnet@v3
+    needs: [set-git-environment]
+    with:
+      dotnet-version: '10.0.x'
+      include-prerelease: true
+
   sql-analyze-windows:
     name: Code analysis on Windows Server
     runs-on: windows-latest
-    needs: [set-git-environment]
+    needs: [setup-dotnet-sdk]
 
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +51,7 @@ jobs:
   sql-analyze-linux:
     name: Code analysis on Linux
     runs-on: ubuntu-latest
-    needs: [set-git-environment]
+    needs: [setup-dotnet-sdk]
 
     steps:
       - uses: actions/checkout@v4
