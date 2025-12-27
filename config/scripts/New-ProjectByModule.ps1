@@ -254,7 +254,7 @@ try {
                         }
                     }
 
-                    $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -in @("Databases","Tables","Users","Stored_Procedures")}
+                    $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -in @("Databases","Tables","Users","Programmability", "Security", "Views")}
                     $sqlPublishProfiles = (Get-ChildItem -Path $directoryProject.FullName -File).Name | Where-Object {$_ -like "*.publish.xml"}
                     $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object {$_ -like "*.dacpac" -and $_ -like "*artifacts*"}
 

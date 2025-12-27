@@ -11,7 +11,7 @@
     "git.autofetch": true,
     "git.autofetchPeriod": 60,
     "git.confirmSync": false,
-    "git.enableCommitSigning": true,
+    "git.enableCommitSigning": false,
     // Terminal behaviour
     "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
     "terminal.integrated.defaultProfile.linux": "pwsh",
@@ -57,5 +57,5 @@
     "csharp.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
     "csharp.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
     "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
-    "dotnet.defaultSolution": "coderhouse-data-analytics.sln"
+    "workbench.editorLargeFileConfirmation": 20
 }

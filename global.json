@@ -2,7 +2,7 @@
   "organization": {
     "name" : "Coderhouse Data Analytics",
     "team" : "https://github.com/ChristianGrimberg",
-    "copyright": "(c) 2025 Christian Grimberg. All rights reserved"
+    "copyright": "(c) 2025 Novocap S.A. All rights reserved"
   },
   "powershell": {
     "module": "0.0.0.1",
@@ -12,7 +12,8 @@
       "Novocap.PowerShell.Logging.Management" : {
         "version": "0.0.2.5",
         "modules" : [
-          "Templates"
+          "03.Entrega",
+          "Nike.Database"
         ]
       }
     }
@@ -50,18 +51,14 @@
     "modelCollation": "1033, CI",
     "runSqlCodeAnalysis": "False",
     "modules": [
+      "03.Entrega",
       "Nike.Database"
     ],
     "packages" : {
-      "Microsoft.SqlPackage" : {
-        "version": "170.2.70",
-        "modules": [
-          "Templates"
-        ]
-      },
       "Microsoft.SqlServer.DacFx" : {
         "version": "170.2.70",
         "modules": [
+          "03.Entrega",
           "Nike.Database"
         ]
       }
