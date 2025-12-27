@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "03.Entrega", "Modules\03.Entrega\03.Entrega.sqlproj", "{3591D9A6-A5EB-458A-8185-BF99E14648B8}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Nike.Database", "Modules\Nike.Database\Nike.Database.sqlproj", "{1F5A059E-011E-4DC7-801C-420CBE0DF116}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3591D9A6-A5EB-458A-8185-BF99E14648B8} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
+		{1F5A059E-011E-4DC7-801C-420CBE0DF116} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
+	EndGlobalSection
+EndGlobal

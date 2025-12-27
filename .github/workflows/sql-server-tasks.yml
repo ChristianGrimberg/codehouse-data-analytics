@@ -81,7 +81,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet publish with CLI
-        run: .\config\make.ps1 -Task Init, Profile, Artifact, SqlPublish
+#        run: .\config\make.ps1 -Task Init, Profile, Artifact, SqlPublish
+        run: .\config\make.ps1 -Task Init, Profile, SqlPublish
         shell: powershell
 
   sql-publish-linux:
@@ -92,7 +93,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet publish with CLI
-        run: ./config/make.ps1 -Task Init, Profile, Artifact, SqlPublish
+#        run: ./config/make.ps1 -Task Init, Profile, Artifact, SqlPublish
+        run: ./config/make.ps1 -Task Init, Profile, SqlPublish
         shell: pwsh
 
   pwsh-import-windows:
