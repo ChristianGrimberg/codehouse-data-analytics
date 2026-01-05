@@ -11,7 +11,7 @@
             "script": "${workspaceFolder}/config/make.ps1",
             "args": [
                 //"-Task Init, Analyze, Workload, Format, Profile, Solution, Project, Restore, Build, Clean, Artifact, Publish, SqlPublish, Import"
-                "-Task Init, Analyze, Workload, Format, Profile, Solution, Project, Restore, Build, Clean, Publish, SqlPublish, Import"
+                "-Task Init, Analyze, Workload, Format, Profile, Solution, Project, Restore, Build, Clean, Publish, Import"
             ],
             "cwd": "${workspaceFolder}"
         }

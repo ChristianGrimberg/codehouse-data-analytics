@@ -1,6 +1,6 @@
 {
     // Environment style
-    "workbench.colorTheme": "Panda Syntax",
+    "workbench.colorTheme": "Default Dark Modern",
     "editor.renderWhitespace": "boundary",
     "editor.fontSize": 12,
     "markdown.styles": [

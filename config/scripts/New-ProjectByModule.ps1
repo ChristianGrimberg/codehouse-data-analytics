@@ -233,7 +233,7 @@ try {
                     $sqlProjectFile.WriteAttributeString('DefaultTargets', 'Build')
                     $sqlProjectFile.WriteStartElement('Sdk')
                     $sqlProjectFile.WriteAttributeString('Name', 'Microsoft.Build.Sql')
-                    $sqlProjectFile.WriteAttributeString('Version', '1.0.0')
+                    $sqlProjectFile.WriteAttributeString('Version', '2.0.0')
 
                     $sqlProjectFile.WriteEndElement()
                     $sqlProjectFile.WriteStartElement('ItemGroup')
@@ -271,8 +271,11 @@ try {
                     }
 
                     foreach($dacpacFile in $sqlDacpacFiles) {
+                        # Convert absolute path to relative path for better portability
+                        $relativeDacpacPath = Resolve-Path -Path $dacpacFile -Relative
+
                         $sqlProjectFile.WriteStartElement('ArtifactReference')
-                        $sqlProjectFile.WriteAttributeString('Include',$dacpacFile)
+                        $sqlProjectFile.WriteAttributeString('Include',$relativeDacpacPath)
                         $sqlProjectFile.WriteEndElement()
                     }
 
