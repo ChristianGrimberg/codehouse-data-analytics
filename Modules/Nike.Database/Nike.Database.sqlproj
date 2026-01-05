@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--codehouse-data-analytics-->
 <Project DefaultTargets="Build">
-	<Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
+	<Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.2.70" />
 		<Folder Include="Tables" />
@@ -14,7 +14,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{B445776C-2EFC-44AD-A604-059B00CBBF17}</ProjectGuid>
+		<ProjectGuid>{4F05B840-8571-417D-BDC7-55B466469AA7}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
