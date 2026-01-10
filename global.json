@@ -45,8 +45,7 @@
     "NuGet.Build.Tasks.Pack" : {
       "version": "6.9.1",
       "modules": [
-        "03.Entrega",
-        "Nike.Database"
+        "Templates"
       ]
     }
   },
@@ -58,7 +57,8 @@
     "runSqlCodeAnalysis": "False",
     "modules": [
       "03.Entrega",
-      "Nike.Database"
+      "Nike.Database",
+      "Entrega.Final"
     ],
     "packages" : {
       "Microsoft.SqlServer.DacFx" : {

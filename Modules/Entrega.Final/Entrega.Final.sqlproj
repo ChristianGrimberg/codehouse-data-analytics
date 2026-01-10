@@ -2,19 +2,15 @@
 <!--codehouse-data-analytics-->
 <Project DefaultTargets="Build">
 	<Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
-	<ItemGroup>
-		<Folder Include="Tables" />
-		<Build Remove="Queries\**\*.sql" />
-		<None Include="03.Entrega.publish.xml" />
-	</ItemGroup>
+	<ItemGroup />
 	<PropertyGroup>
-		<PackageId>03.Entrega</PackageId>
+		<PackageId>Entrega.Final</PackageId>
 		<Version>0.0.0.1</Version>
 		<Authors>https://github.com/ChristianGrimberg</Authors>
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{AC1F4C37-27C9-4367-B317-E828452CE20B}</ProjectGuid>
+		<ProjectGuid>{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>

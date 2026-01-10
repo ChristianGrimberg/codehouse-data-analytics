@@ -9,6 +9,8 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "03.Entrega", "Modules\03.En
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Nike.Database", "Modules\Nike.Database\Nike.Database.sqlproj", "{3272C5DC-0FDA-42D8-A656-FC8A1061C7ED}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Entrega.Final", "Modules\Entrega.Final\Entrega.Final.sqlproj", "{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,12 @@ Global
 		{3272C5DC-0FDA-42D8-A656-FC8A1061C7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3272C5DC-0FDA-42D8-A656-FC8A1061C7ED}.Release|x64.ActiveCfg = Release|Any CPU
 		{3272C5DC-0FDA-42D8-A656-FC8A1061C7ED}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,5 +46,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D8C7353C-8FC0-4886-AD71-DAA97256E4D6} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
 		{3272C5DC-0FDA-42D8-A656-FC8A1061C7ED} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
+		{0B58FCAB-33E9-484F-A5B8-7A6D3D633437} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
 	EndGlobalSection
 EndGlobal
