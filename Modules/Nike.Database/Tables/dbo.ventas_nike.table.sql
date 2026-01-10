@@ -17,47 +17,11 @@ CREATE TABLE [dbo].[ventas_nike] (
     [Units Sold] INT,
     [Costo Unitario] DECIMAL(10, 2),
     [Operating Margin] DECIMAL(10, 2)
+
+    CONSTRAINT FK_Categoria FOREIGN KEY (id_Category) REFERENCES Categorias (id_Category),
+    CONSTRAINT FK_Ciudad FOREIGN KEY (id_City) REFERENCES Ciudad (id_City),
+    CONSTRAINT FK_Descripcion FOREIGN KEY (id_DESCRIPTION) REFERENCES Descripcion (id_DESCRIPTION),
+    CONSTRAINT FK_Estado FOREIGN KEY (id_State) REFERENCES Estado (id_State),
+    CONSTRAINT FK_Producto FOREIGN KEY (id_PRODUCT_NAME) REFERENCES Nombre_Producto (id_PRODUCT_NAME)
 );
 GO
-
-ALTER TABLE [dbo].[ventas_nike]
-ADD CONSTRAINT FK_Categoria
-    FOREIGN KEY (id_Category) REFERENCES Categorias (id_Category),
-
-    CONSTRAINT FK_Ciudad
-    FOREIGN KEY (id_City) REFERENCES Ciudad (id_City),
-
-    CONSTRAINT FK_Descripcion
-    FOREIGN KEY (id_DESCRIPTION) REFERENCES Descripcion (id_DESCRIPTION),
-
-    CONSTRAINT FK_Estado
-    FOREIGN KEY (id_State) REFERENCES Estado (id_State),
-
-    CONSTRAINT FK_Producto
-    FOREIGN KEY (id_PRODUCT_NAME) REFERENCES Nombre_Producto (id_PRODUCT_NAME);
-GO
-
-INSERT INTO [dbo].[ventas_nike] (
-    INVOICE,
-    id_Region,
-    id_State,
-    id_City,
-    id_Department,
-    id_Category,
-    id_SubCategory,
-    id_PRODUCT_NAME,
-    id_DESCRIPTION,
-    id_PRODUCT_TYPE,
-    PRODUCT_SIZE,
-    id_Color,
-    id_BRAND,
-    id_AVAILABILITY,
-    [Price per Unit],
-    [Units Sold],
-    [Costo Unitario],
-    [Operating Margin]
-)
-VALUES
-(
-    ''
-);
