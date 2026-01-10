@@ -2,7 +2,10 @@
 <!--codehouse-data-analytics-->
 <Project DefaultTargets="Build">
 	<Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
-	<ItemGroup />
+	<ItemGroup>
+		<Folder Include="Tables" />
+		<None Include="Entrega.Final.publish.xml" />
+	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>Entrega.Final</PackageId>
 		<Version>0.0.0.1</Version>
@@ -10,7 +13,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{0B58FCAB-33E9-484F-A5B8-7A6D3D633437}</ProjectGuid>
+		<ProjectGuid>{7E636FBA-44A4-47A3-AC7A-EF2BFB551D1C}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
