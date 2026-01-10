@@ -21,7 +21,7 @@ try {
     $global = Get-Content -Path $GlobalPath -Raw -Encoding Ascii | ConvertFrom-Json
 
     if($ModulesPath.Contains("Modules")) {
-        $moduleDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object -Property FullName -notlike "*Template*"
+        $moduleDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object -Property FullName -notmatch "Template|Imported"
     }
 
     if(-not [System.String]::IsNullOrEmpty($global) -and $moduleDirectories.Length -gt 0) {
@@ -63,7 +63,7 @@ try {
 
                 if($dotnetConfigs -contains "modules") {
                     foreach($mod in $global.dotnet.modules) {
-                        if ($mod -notlike "*Template*") {
+                        if ($mod -notmatch "Template|Imported") {
                             $dotnetModules.Add($mod)
 
                             ".NET Module [{0}] found in {1} file" -f $mod, $globalFileName | Out-Host
@@ -86,7 +86,7 @@ try {
 
                     foreach($paq in $dotnetExistingPackages) {
                         foreach ($mod in $global.dotnet.packages.$paq.modules) {
-                            if ($mod -notlike "*Template*") {
+                            if ($mod -notmatch "Template|Imported") {
                                 $dotnetModulesWithPackages.Add($mod)
 
                                 ".NET Package [{0}] for module [{1}] found in {2} file" -f $paq, $mod, $globalFileName | Out-Host
@@ -120,7 +120,7 @@ try {
 
                 if($sqlConfigs -contains "modules") {
                     foreach($mod in $global.sql.modules) {
-                        if ($mod -notlike "*Template*") {
+                        if ($mod -notmatch "Template|Imported") {
                             $sqlModules.Add($mod)
 
                             "SQL Server Module [{0}] found in {1} file" -f $mod, $globalFileName | Out-Host
@@ -133,7 +133,7 @@ try {
 
                     foreach($paq in $sqlExistingPackages) {
                         foreach ($mod in $global.sql.packages.$paq.modules) {
-                            if ($mod -notlike "*Template*") {
+                            if ($mod -notmatch "Template|Imported") {
                                 $sqlModulesWithPackages.Add($mod)
 
                                 "SQL Server Package [{0}] for module [{1}] found in {2} file" -f $paq, $mod, $globalFileName | Out-Host
@@ -147,7 +147,7 @@ try {
         foreach ($directoryProject in $moduleDirectories) {
             Set-Location -Path $directoryProject.FullName
 
-            if ($dotnetModules.Contains($directoryProject.BaseName)) {
+            if ($null -ne $dotnetModules -and $dotnetModules.Contains($directoryProject.BaseName)) {
                 [String] $dotnetProjectBaseName = "{0}.csproj" -f $directoryProject.BaseName
                 [String] $dotnetProjectFullName = Join-Path -Path $directoryProject.FullName -ChildPath $dotnetProjectBaseName
 
@@ -164,15 +164,93 @@ try {
 
                     $dotnetProjectFile.WriteStartElement('ItemGroup')
                     [String] $dotnetTypesPath = Join-Path -Path $directoryProject.FullName -ChildPath "Types"
+                    [String] $dotnetControlsPath = Join-Path -Path $directoryProject.FullName -ChildPath "Controls"
+                    [String] $dotnetEnumsPath = Join-Path -Path $directoryProject.FullName -ChildPath "Enums"
+                    [String] $dotnetInfoPath = Join-Path -Path $directoryProject.FullName -ChildPath "Info"
+                    [String] $dotnetPropertiesPath = Join-Path -Path $directoryProject.FullName -ChildPath "Properties"
+                    [String] $dotnetUtilitiesPath = Join-Path -Path $directoryProject.FullName -ChildPath "Utilities"
+                    [String] $dotnetAppPath = Join-Path -Path $directoryProject.FullName -ChildPath "App"
 
                     if(Test-Path -Path $dotnetTypesPath -PathType Container) {
-                        $dotnetClassLibraries = Get-ChildItem -Path $dotnetTypesPath -File | Where-Object -Property FullName -like "*.cs"
+                        $dotnetTypesPathClassLibraries = Get-ChildItem -Path $dotnetTypesPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetClassLibraries.FullName) {
-                            $dotnetRelativePathClass = Resolve-Path -Path $class -Relative
+                        foreach($class in $dotnetTypesPathClassLibraries.FullName) {
+                            $dotnetRelativeTypesClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
-                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativePathClass)
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeTypesClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetControlsPath -PathType Container) {
+                        $dotnetControlsPathClassLibraries = Get-ChildItem -Path $dotnetControlsPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetControlsPathClassLibraries.FullName) {
+                            $dotnetRelativeControlsClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeControlsClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetEnumsPath -PathType Container) {
+                        $dotnetEnumsPathClassLibraries = Get-ChildItem -Path $dotnetEnumsPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetEnumsPathClassLibraries.FullName) {
+                            $dotnetRelativeEnumsClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeEnumsClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetInfoPath -PathType Container) {
+                        $dotnetInfoPathClassLibraries = Get-ChildItem -Path $dotnetInfoPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetInfoPathClassLibraries.FullName) {
+                            $dotnetRelativeInfoClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeInfoClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetPropertiesPath -PathType Container) {
+                        $dotnetPropertiesPathClassLibraries = Get-ChildItem -Path $dotnetPropertiesPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetPropertiesPathClassLibraries.FullName) {
+                            $dotnetRelativePropertiesClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativePropertiesClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetUtilitiesPath -PathType Container) {
+                        $dotnetUtilitiesPathClassLibraries = Get-ChildItem -Path $dotnetUtilitiesPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetUtilitiesPathClassLibraries.FullName) {
+                            $dotnetRelativeUtilitiesClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeUtilitiesClass)
+                            $dotnetProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    if(Test-Path -Path $dotnetAppPath -PathType Container) {
+                        $dotnetAppPathClassLibraries = Get-ChildItem -Path $dotnetAppPath -File | Where-Object -Property FullName -like "*.cs"
+
+                        foreach($class in $dotnetAppPathClassLibraries.FullName) {
+                            $dotnetRelativeAppClass = Resolve-Path -Path $class -Relative
+
+                            $dotnetProjectFile.WriteStartElement('Compile')
+                            $dotnetProjectFile.WriteAttributeString('Include', $dotnetRelativeAppClass)
                             $dotnetProjectFile.WriteEndElement()
                         }
                     }
@@ -216,7 +294,7 @@ try {
                 ".NET Project file created at {0}" -f $dotnetProjectFullName | Out-Host
             }
 
-            if($sqlModules.Contains($directoryProject.BaseName)) {
+            if($null -ne $sqlModules -and $sqlModules.Contains($directoryProject.BaseName)) {
                 [String] $sqlProjectBaseName = "{0}.sqlproj" -f $directoryProject.BaseName
                 [String] $sqlProjectFullName = Join-Path -Path $directoryProject.FullName -ChildPath $sqlProjectBaseName
                 [String] $sqlProjectGuid = [System.Guid]::NewGuid().ToString("B").ToUpper()
@@ -255,12 +333,19 @@ try {
                     }
 
                     $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -in @("Databases","Tables","Users","Programmability", "Security", "Views")}
+                    $sqlQueriesDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -like "Queries*"}
                     $sqlPublishProfiles = (Get-ChildItem -Path $directoryProject.FullName -File).Name | Where-Object {$_ -like "*.publish.xml"}
-                    $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object {$_ -like "*.dacpac" -and $_ -like "*artifacts*"}
+                    $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object {$_ -like "*.dacpac"}
 
                     foreach($sqlDirectory in $sqlModuleDirectories) {
                         $sqlProjectFile.WriteStartElement('Folder')
                         $sqlProjectFile.WriteAttributeString('Include',$sqlDirectory)
+                        $sqlProjectFile.WriteEndElement()
+                    }
+
+                    foreach($sqlDirectory in $sqlQueriesDirectories) {
+                        $sqlProjectFile.WriteStartElement('Build')
+                        $sqlProjectFile.WriteAttributeString('Remove','Queries\**\*.sql')
                         $sqlProjectFile.WriteEndElement()
                     }
 

@@ -1,4 +1,4 @@
-name: Run SQL Server Projects Analysis, Profile, Build, Artifact & Publish
+name: Run SQL Server Projects Analysis, Build, Profile, Artifacts & Publish
 
 on:
   workflow_dispatch:
@@ -6,11 +6,9 @@ on:
     paths:
     - '**.sql'
     - '**.sqlproj'
-    - '**.sln'
     - '**.publish.xml'
     - '**.dacpac'
     - '**.bacpac'
-    - '.global.json'
     - './github/workflows/sql-server-tasks.yml'
 
 jobs:
@@ -29,92 +27,158 @@ jobs:
           echo "GIT_SHA=${GIT_SHA}"
           echo "GIT_BRANCH=${GIT_BRANCH}"
 
-  sql-analyze-windows:
-    name: Code analysis on Windows Server
+  sql-analysis-windows:
+    name: Analysis SQL Server projects on Windows Server
     runs-on: windows-latest
     needs: [set-git-environment]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Run dotnet analysis with CLI
-        run: .\config\make.ps1 -Task Init, Analyze
+      - name: Run SQL Analysis with CLI
+        run: .\config\make.ps1 -Task Init, SqlAnalysis, SqlLint
         shell: powershell
 
-  sql-analyze-linux:
-    name: Code analysis on Linux
+  sql-analysis-linux:
+    name: Analysis SQL Server projects on Linux
     runs-on: ubuntu-latest
     needs: [set-git-environment]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Run dotnet analysis with CLI
-        run: ./config/make.ps1 -Task Init, Analyze
+      - name: Run SQL Analysis with CLI
+        run: ./config/make.ps1 -Task Init, SqlAnalysis, SqlLint
         shell: pwsh
 
   sql-build-windows:
     name: Build SQL Server projects on Windows Server
     runs-on: windows-latest
-    needs: [sql-analyze-windows]
+    needs: [sql-analysis-windows]
 
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet build with CLI
-        run: .\config\make.ps1 -Task Init, Profile, Solution, Project, Clean, Restore, Build
+        run: .\config\make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild
         shell: powershell
 
   sql-build-linux:
     name: Build SQL Server projects on Linux
     runs-on: ubuntu-latest
-    needs: [sql-analyze-linux]
+    needs: [sql-analysis-linux]
 
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet build with CLI
-        run: ./config/make.ps1 -Task Init, Profile, Solution, Project, Clean, Restore, Build
+        run: ./config/make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild
         shell: pwsh
 
-#  sql-publish-windows:
-#    name: Publish SQL Server artifacts from Windows Server
-#    runs-on: windows-latest
-#    needs: [sql-build-windows]
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: Run dotnet publish with CLI
-#        run: .\config\make.ps1 -Task Init, Profile
-#        shell: powershell
-
-#  sql-publish-linux:
-#    name: Publish SQL Server artifacts from Linux
-#    runs-on: ubuntu-latest
-#    needs: [sql-build-linux]
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: Run dotnet publish with CLI
-#        run: ./config/make.ps1 -Task Init, Profile
-#        shell: pwsh
-
-  pwsh-import-windows:
-    name: Import PowerShell modules on Windows Server
+  sql-profile-test-windows:
+    name: Test SQL Server connection using repository secrets on Windows Server
     runs-on: windows-latest
-    #needs: [sql-publish-windows]
     needs: [sql-build-windows]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Run import modules with Windows PowerShell
-        run: .\config\make.ps1 -Task Init, Import
+      - name: Install SqlServer module
+        run: |
+          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
+          Import-Module SqlServer
         shell: powershell
+      - name: Test SQL Server connection using repository secrets
+        run: |
+          $serverName = ${{ secrets.SQLSERVERNAME }}
+          $database = ${{ secrets.SQLDATABASE }}
+          $user = ${{ secrets.SQLUSER }}
+          $password = ${{ secrets.SQLPASSWORD }}
+          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
+        shell: powershell
+        continue-on-error: true
 
-  pwsh-import-linux:
-    name: Import PowerShell modules on Linux
+  sql-profile-test-linux:
+    name: Test SQL Server connection using repository secrets on Linux
     runs-on: ubuntu-latest
-    #needs: [sql-publish-linux]
     needs: [sql-build-linux]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Run import modules with PowerShell Core
-        run: ./config/make.ps1 -Task Init, Import
+      - name: Install SqlServer module
+        run: |
+          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
+          Import-Module SqlServer
+        shell: pwsh
+      - name: Test SQL Server connection using repository secrets
+        run: |
+          $serverName = "${{ secrets.SQLSERVERNAME }}"
+          $database = "${{ secrets.SQLDATABASE }}"
+          $user = "${{ secrets.SQLUSER }}"
+          $password = "${{ secrets.SQLPASSWORD }}"
+          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
+        shell: pwsh
+        continue-on-error: true
+
+  sql-dacpac-windows:
+    name: Create SQL Server DACPACs on Windows Server
+    runs-on: windows-latest
+    needs: [sql-profile-test-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet artifact creation with CLI
+        run: .\config\make.ps1 -Task Init, SqlProfile, SqlDacpac
+        shell: powershell
+
+  sql-dacpac-linux:
+    name: Create SQL Server DACPACs on Linux
+    runs-on: ubuntu-latest
+    needs: [sql-profile-test-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet artifact creation with CLI
+        run: ./config/make.ps1 -Task Init, SqlProfile, SqlDacpac
+        shell: pwsh
+
+  sql-publish-windows:
+    name: Publish SQL Server artifacts from Windows Server
+    runs-on: windows-latest
+    needs: [sql-dacpac-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: .\config\make.ps1 -Task Init, SqlProfile, SqlPublish
+        shell: powershell
+        continue-on-error: true
+
+  sql-publish-linux:
+    name: Publish SQL Server artifacts from Linux
+    runs-on: ubuntu-latest
+    needs: [sql-dacpac-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet publish with CLI
+        run: ./config/make.ps1 -Task Init, SqlProfile, SqlPublish
+        shell: pwsh
+        continue-on-error: true
+
+  sql-bacpac-windows:
+    name: Create SQL Server BACPACs on Windows Server
+    runs-on: windows-latest
+    needs: [sql-publish-windows]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet BACPAC creation with CLI
+        run: .\config\make.ps1 -Task Init, SqlProfile, SqlBacpac
+        shell: powershell
+
+  sql-bacpac-linux:
+    name: Create SQL Server BACPACs on Linux
+    runs-on: ubuntu-latest
+    needs: [sql-publish-linux]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dotnet BACPAC creation with CLI
+        run: ./config/make.ps1 -Task Init, SqlProfile, SqlBacpac
         shell: pwsh

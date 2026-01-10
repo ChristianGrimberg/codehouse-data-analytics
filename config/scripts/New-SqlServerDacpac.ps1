@@ -16,11 +16,11 @@ $before = $Host.UI.RawUI.ForegroundColor
 
 try {
     $Host.UI.RawUI.ForegroundColor = "DarkGreen"
-    "Creating SQL Server artifacts..." | Out-Host
+    "Creating SQL Server DACPACs..." | Out-Host
 
     # Convert to absolute path to work correctly when changing directories
     [String] $functionPath = Resolve-Path (Join-Path -Path $FunctionsPath -ChildPath "Invoke-DotNetCore.ps1")
-    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notlike "*Template*" }
+    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
 
     [Int] $builtProjectsCount = 0
 
@@ -44,16 +44,16 @@ try {
             Set-Location -Path $projectModule.FullName
 
             # Build the SQL project using dotnet build with relative artifacts output directory
-            $buildArguments = '"{0}" --configuration Release --output "{1}"' -f $sqlProjectFile.Name, $relativePath
+            $buildArguments = '"{0}" --configuration Release --output "{1}" --no-incremental' -f $sqlProjectFile.Name, $relativePath
 
             try {
                 if (& $functionPath -Command "build" -Arguments $buildArguments -Privileged $false) {
-                    ("SQL Server artifact for module {0} has been built successfully`n" -f $projectModule.BaseName) | Out-Host
+                    ("SQL Server DACPAC for module {0} has been built successfully`n" -f $projectModule.BaseName) | Out-Host
                     $builtProjectsCount++
                 }
             }
             catch {
-                throw ("Error building SQL Server artifact for module {0}: {1}`n" -f $projectModule.BaseName, $_)
+                throw ("Error building SQL Server DACPAC for module {0}: {1}`n" -f $projectModule.BaseName, $_)
             }
             finally {
                 # Restore the original location

@@ -20,7 +20,7 @@ try {
 
     if($ProjectsPath.Contains("Modules")) {
         [String] $rootPath = (Split-Path -Parent $ProjectsPath).ToString()
-        $dotnetProjectDirectories = Get-ChildItem -Path $ProjectsPath -Directory | Where-Object -Property FullName -notlike "*Template*"
+        $dotnetProjectDirectories = Get-ChildItem -Path $ProjectsPath -Directory | Where-Object -Property FullName -notmatch "Template|Imported"
 
         foreach ($directoryProject in $dotnetProjectDirectories) {
             if ($null -ne $directoryProject.FullName -and $directoryProject.FullName.Contains('Modules')) {

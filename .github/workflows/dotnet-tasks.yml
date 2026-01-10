@@ -1,4 +1,4 @@
-name: Run .NET Analysis, Build, Publish & PowerShell Import
+name: Run .NET Solution, Project, Clean, Restore, Build & Publish
 
 on:
   workflow_dispatch:
@@ -6,12 +6,7 @@ on:
     paths:
     - '**.cs'
     - '**.csproj'
-    - '**.sln'
-    - '**.ps1'
-    - '**.psm1'
-    - '**.psd1'
     - '.editorconfig'
-    - '.global.json'
     - './github/workflows/dotnet-tasks.yml'
 
 jobs:
@@ -30,49 +25,26 @@ jobs:
           echo "GIT_SHA=${GIT_SHA}"
           echo "GIT_BRANCH=${GIT_BRANCH}"
 
-  dotnet-analysis-windows:
-    name: Code analysis on Windows Server
-    runs-on: windows-latest
-    needs: [set-git-environment]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run dotnet analysis with CLI
-        run: .\config\make.ps1 -Task Init, Analyze
-        shell: powershell
-
-  dotnet-analysis-linux:
-    name: Code analysis on Linux
-    runs-on: ubuntu-latest
-    needs: [set-git-environment]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run dotnet analysis with CLI
-        run: ./config/make.ps1 -Task Init, Analyze
-        shell: pwsh
-
   dotnet-build-windows:
     name: Build Class Libraries on Windows Server
     runs-on: windows-latest
-    needs: [dotnet-analysis-windows]
+    needs: [set-git-environment]
 
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet build with CLI
-        run: .\config\make.ps1 -Task Init, Solution, Project, Clean, Restore, Build
+        run: .\config\make.ps1 -Task Init, DotnetSolution, ProjectByModule, DotnetClean, DotnetRestore, DotnetBuild
         shell: powershell
 
   dotnet-build-linux:
     name: Build Class Libraries on Linux
     runs-on: ubuntu-latest
-    needs: [dotnet-analysis-linux]
+    needs: [set-git-environment]
 
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet build with CLI
-        run: ./config/make.ps1 -Task Init, Solution, Project, Clean, Restore, Build
+        run: ./config/make.ps1 -Task Init, DotnetSolution, ProjectByModule, DotnetClean, DotnetRestore, DotnetBuild
         shell: pwsh
 
   dotnet-publish-windows:
@@ -83,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet publish with CLI
-        run: .\config\make.ps1 -Task Init, Solution, Project, Clean, Publish
+        run: .\config\make.ps1 -Task Init, DotnetBuild, DotnetPublish
         shell: powershell
 
   dotnet-publish-linux:
@@ -95,27 +67,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run dotnet publish with CLI
-        run: ./config/make.ps1 -Task Init, Solution, Project, Clean, Publish
-        shell: pwsh
-
-  pwsh-import-windows:
-    name: Import PowerShell modules on Windows Server
-    runs-on: windows-latest
-    needs: [dotnet-publish-windows]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run import modules with Windows PowerShell
-        run: .\config\make.ps1 -Task Init, Import
-        shell: powershell
-
-  pwsh-import-linux:
-    name: Import PowerShell modules on Linux
-    runs-on: ubuntu-latest
-    needs: [dotnet-publish-linux]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run import modules with PowerShell Core
-        run: ./config/make.ps1 -Task Init, Import
+        run: ./config/make.ps1 -Task Init, DotnetBuild, DotnetPublish
         shell: pwsh

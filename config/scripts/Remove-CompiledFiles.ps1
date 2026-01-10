@@ -17,6 +17,7 @@ try {
     [String] $corePath = ("{0}/core" -f $RootPath)
     [String[]] $buildDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -in ("bin","obj")).FullName
     [String[]] $libDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "Libs").FullName
+    [String[]] $artifactDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "artifacts").FullName
 
     if(Test-Path -Path $corePath -PathType Leaf) {
         Remove-Item -Path $corePath -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
@@ -43,6 +44,11 @@ try {
             $Host.UI.RawUI.ForegroundColor = "Red"
             "Existing libraries are locked by the system" | Out-Host
         }
+    }
+
+    if($null -ne $artifactDirectories) {
+        $artifactDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+        "Artifact directories are clean now" | Out-Host
     }
 }
 catch {

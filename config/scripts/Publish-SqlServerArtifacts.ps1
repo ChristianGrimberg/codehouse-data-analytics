@@ -17,7 +17,7 @@ try {
     $Host.UI.RawUI.ForegroundColor = "Magenta"
     "Executing SQL Server publish profiles..." | Out-Host
 
-    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notlike "*Template*" }
+    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
 
     [Int] $executedProfilesCount = 0
 

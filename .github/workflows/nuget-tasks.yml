@@ -15,5 +15,5 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Publishing
-        run: ./config/make.ps1 -Task Init, Push -ApiKey ${{ secrets.PSGALLERY }}
+        run: ./config/make.ps1 -Task Init, PowershellGallery -ApiKey ${{ secrets.PSGALLERY }}
         shell: pwsh

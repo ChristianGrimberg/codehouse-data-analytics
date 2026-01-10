@@ -52,11 +52,11 @@
 .gitattributes          @ChristianGrimberg
 CODEOWNERS              @ChristianGrimberg
 SUPPORT.md              @ChristianGrimberg  @PablitoSkrzypek
-CONTRIBUTING.md         @ChristianGrimberg
-LICENCE                 @ChristianGrimberg
+CONTRIBUTING.md         @ChristianGrimberg  @PablitoSkrzypek
+LICENCE                 @ChristianGrimberg  @PablitoSkrzypek
 
 # Los cambios en los templates de documentación están protegidos por:
-*_TEMPLATE.md           @ChristianGrimberg
+*_TEMPLATE.md           @ChristianGrimberg  @PablitoSkrzypek
 
 # Los cambios en las configuraciones de los editores de código están protegidos por:
 .vscode/                @ChristianGrimberg
@@ -64,8 +64,8 @@ LICENCE                 @ChristianGrimberg
 config/                 @ChristianGrimberg
 
 # Los cambios en la documentación del repositorio están protegidos por:
-README.md               @ChristianGrimberg
-docs/                   @ChristianGrimberg
+README.md               @ChristianGrimberg  @PablitoSkrzypek
+docs/                   @ChristianGrimberg  @PablitoSkrzypek
 
 # Los cambios en los modulos estan protegidos por
 Modules/                @ChristianGrimberg

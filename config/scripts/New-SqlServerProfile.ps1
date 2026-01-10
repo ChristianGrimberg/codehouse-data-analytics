@@ -29,7 +29,7 @@ try {
     $Host.UI.RawUI.ForegroundColor = "DarkBlue"
     "Creating SQL Server publish profiles..." | Out-Host
 
-    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notlike "*Template*" }
+    $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
     [Int] $createdProfilesCount = 0
 
     foreach ($projectModule in $sqlProjectDirectories) {

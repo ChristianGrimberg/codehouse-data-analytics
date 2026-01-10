@@ -23,7 +23,7 @@ try {
     "Publishing Class Libraries..." | Out-Host
 
     [String] $funcionPath = Join-Path -Path $FunctionsPath -ChildPath "Invoke-DotNetCore.ps1"
-    $dotnetProjectDirectories = Get-ChildItem -Path $ProjectsPath -Directory | Where-Object { $_.FullName -notlike "*Template*" }
+    $dotnetProjectDirectories = Get-ChildItem -Path $ProjectsPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
 
     foreach($projectModule in $dotnetProjectDirectories) {
         [Int] $typeFoldersCount = (Get-ChildItem -Path $projectModule.FullName | Where-Object -Property Name -eq "Types" | Measure-Object).Count
