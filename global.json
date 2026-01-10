@@ -2,7 +2,7 @@
   "organization": {
     "name" : "Coderhouse Data Analytics",
     "team" : "https://github.com/ChristianGrimberg",
-    "copyright": "(c) 2025 Novocap S.A. All rights reserved"
+    "copyright": "(c) 2026 Novocap S.A. All rights reserved"
   },
   "powershell": {
     "module": "0.0.0.1",
@@ -64,8 +64,7 @@
       "Microsoft.SqlServer.DacFx" : {
         "version": "170.2.70",
         "modules": [
-          "03.Entrega",
-          "Nike.Database"
+          "Templates"
         ]
       }
     }

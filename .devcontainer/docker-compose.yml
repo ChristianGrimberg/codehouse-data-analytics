@@ -23,8 +23,8 @@ services:
 
   db:
     image: mcr.microsoft.com/azure-sql-edge
-    hostname: Coderhouse-Data-Analytics
-    container_name: Coderhouse-Data-Analytics
+    hostname: coderhouse-data-analytics
+    container_name: coderhouse-data-analytics
     restart: unless-stopped
     environment:
       ACCEPT_EULA: Y
