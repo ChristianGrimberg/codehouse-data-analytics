@@ -3,8 +3,8 @@
 <Project DefaultTargets="Build">
 	<Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.2.70" />
 		<Folder Include="Tables" />
+		<Build Remove="Queries\**\*.sql" />
 		<None Include="03.Entrega.publish.xml" />
 	</ItemGroup>
 	<PropertyGroup>
@@ -14,7 +14,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{CA8E60D8-53BC-4AA1-B009-06380BFF62CF}</ProjectGuid>
+		<ProjectGuid>{7C9141D3-85D5-4880-96B9-154EF68BA348}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
