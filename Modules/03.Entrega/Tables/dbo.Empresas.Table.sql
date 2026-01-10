@@ -1,0 +1,5 @@
+CREATE TABLE [dbo].[Empresas](
+	[EmpresaID] [INT]			NOT NULL	PRIMARY KEY IDENTITY(1,1)
+	,[Nombre] [NVARCHAR](MAX)	NULL
+);
+GO
