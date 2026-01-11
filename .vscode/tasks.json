@@ -1,118 +1,118 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
-  "version": "2.0.0",
-  "tasks": [
-    {
-        "label": "Run PowerShell Analysis & Import",
-        "type": "shell",
-        "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, PowershellAnalysis, PowershellImport",
-        "group": {
-            "kind": "build"
-        },
-        "presentation": {
-            "reveal": "silent",
-            "panel": "shared"
-        },
-        "options": {
-            "shell": {
-                "executable": "/usr/bin/pwsh",
-                "args": [
-                    "-NoLogo",
-                    "-NoProfile",
-                    "-Command"
-                ]
-            }
-        },
-        "windows": {
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run PowerShell Analysis & Import",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, PowershellAnalysis, PowershellImport",
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
             "options": {
                 "shell": {
-                    "executable": "powershell.exe",
+                    "executable": "/usr/bin/pwsh",
                     "args": [
                         "-NoLogo",
                         "-NoProfile",
-                        "-ExecutionPolicy",
-                        "Bypass",
                         "-Command"
                     ]
                 }
             },
-            "command": ".\\config\\make.ps1 -Task Init, PowershellAnalysis, PowershellImport"
-        }
-    },
-    {
-        "label": "Run .NET Solution, Project, Clean, Restore, Build & Publish",
-        "type": "shell",
-        "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, DotnetPublish",
-        "group": {
-            "kind": "build"
-        },
-        "presentation": {
-            "reveal": "silent",
-            "panel": "shared"
-        },
-        "options": {
-            "shell": {
-                "executable": "/usr/bin/pwsh",
-                "args": [
-                    "-NoLogo",
-                    "-NoProfile",
-                    "-Command"
-                ]
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "pwsh.exe",
+                        "args": [
+                            "-NoLogo",
+                            "-NoProfile",
+                            "-ExecutionPolicy",
+                            "Bypass",
+                            "-Command"
+                        ]
+                    }
+                },
+                "command": ".\\config\\make.ps1 -Task Init, PowershellAnalysis, PowershellImport"
             }
         },
-        "windows": {
+        {
+            "label": "Run .NET Solution, Project, Clean, Restore, Build & Publish",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, DotnetPublish",
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
             "options": {
                 "shell": {
-                    "executable": "powershell.exe",
+                    "executable": "/usr/bin/pwsh",
                     "args": [
                         "-NoLogo",
                         "-NoProfile",
-                        "-ExecutionPolicy",
-                        "Bypass",
                         "-Command"
                     ]
                 }
             },
-            "command": ".\\config\\make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, DotnetPublish"
-        }
-    },
-    {
-        "label": "Run SQL Server Projects Analysis, Build, Profile, Artifacts & Publish",
-        "type": "shell",
-        "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish",
-        "group": {
-            "kind": "build"
-        },
-        "presentation": {
-            "reveal": "silent",
-            "panel": "shared"
-        },
-        "options": {
-            "shell": {
-                "executable": "/usr/bin/pwsh",
-                "args": [
-                    "-NoLogo",
-                    "-NoProfile",
-                    "-Command"
-                ]
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "pwsh.exe",
+                        "args": [
+                            "-NoLogo",
+                            "-NoProfile",
+                            "-ExecutionPolicy",
+                            "Bypass",
+                            "-Command"
+                        ]
+                    }
+                },
+                "command": ".\\config\\make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, DotnetPublish"
             }
         },
-        "windows": {
+        {
+            "label": "Run SQL Server Projects Analysis, Build, Profile, Artifacts & Publish",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish",
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
             "options": {
                 "shell": {
-                    "executable": "powershell.exe",
+                    "executable": "/usr/bin/pwsh",
                     "args": [
                         "-NoLogo",
                         "-NoProfile",
-                        "-ExecutionPolicy",
-                        "Bypass",
                         "-Command"
                     ]
                 }
             },
-            "command": ".\\config\\make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "pwsh.exe",
+                        "args": [
+                            "-NoLogo",
+                            "-NoProfile",
+                            "-ExecutionPolicy",
+                            "Bypass",
+                            "-Command"
+                        ]
+                    }
+                },
+                "command": ".\\config\\make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish"
+            }
         }
-    }
-  ]
+    ]
 }
