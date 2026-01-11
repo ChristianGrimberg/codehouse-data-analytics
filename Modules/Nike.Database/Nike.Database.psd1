@@ -18,7 +18,7 @@ ModuleVersion = '0.0.0.1'
 CompatiblePSEditions = 'Desktop', 'Core'
 
 # ID used to uniquely identify this module
-GUID = '048ce20c-5877-4075-bc75-a7031a0c7cc0'
+GUID = '6be1a639-9ceb-43d9-a6d2-4566976b7381'
 
 # Author of this module
 Author = 'https://github.com/ChristianGrimberg'
@@ -27,7 +27,7 @@ Author = 'https://github.com/ChristianGrimberg'
 CompanyName = 'Coderhouse Data Analytics'
 
 # Copyright statement for this module
-Copyright = '(c) 2025 Novocap S.A. All rights reserved'
+Copyright = '(c) 2026 Novocap S.A. All rights reserved'
 
 # Description of the functionality provided by this module
 Description = 'Import Nike.Database.psm1'

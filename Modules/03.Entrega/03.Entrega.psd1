@@ -18,7 +18,7 @@ ModuleVersion = '0.0.0.1'
 CompatiblePSEditions = 'Desktop', 'Core'
 
 # ID used to uniquely identify this module
-GUID = 'c2b23e21-111f-4337-bcf6-776ded605929'
+GUID = '6a798bcd-dc93-450d-85b6-7934552ab0fd'
 
 # Author of this module
 Author = 'https://github.com/ChristianGrimberg'
@@ -27,7 +27,7 @@ Author = 'https://github.com/ChristianGrimberg'
 CompanyName = 'Coderhouse Data Analytics'
 
 # Copyright statement for this module
-Copyright = '(c) 2025 Novocap S.A. All rights reserved'
+Copyright = '(c) 2026 Novocap S.A. All rights reserved'
 
 # Description of the functionality provided by this module
 Description = 'Import 03.Entrega.psm1'

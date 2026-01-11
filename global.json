@@ -1,17 +1,17 @@
 {
   "organization": {
-    "name" : "Coderhouse Data Analytics",
-    "team" : "https://github.com/ChristianGrimberg",
+    "name": "Coderhouse Data Analytics",
+    "team": "https://github.com/ChristianGrimberg",
     "copyright": "(c) 2026 Novocap S.A. All rights reserved"
   },
   "powershell": {
     "module": "0.0.0.1",
     "guid": "e4ace8af-11d5-48f3-87bc-8cec589b0157",
     "version": "5.1",
-    "dependencies" : {
-      "Novocap.PowerShell.Logging.Management" : {
+    "dependencies": {
+      "Novocap.PowerShell.Logging.Management": {
         "version": "0.0.2.5",
-        "modules" : [
+        "modules": [
           "Templates"
         ]
       }
@@ -24,7 +24,7 @@
     "modules": [
       "Templates"
     ],
-    "common" : {
+    "common": {
       "ImplicitUsings": "disable",
       "Nullable": "disable",
       "EnableDefaultCompileItems": "false",
@@ -34,15 +34,15 @@
       "EnforceCodeStyleInBuild": "true",
       "CodeAnalysisTreatWarningsAsErrors": "true"
     },
-    "packages" : {
-      "System.IO.Compression.ZipFile" : {
+    "packages": {
+      "System.IO.Compression.ZipFile": {
         "version": "4.3.0",
         "modules": [
           "Templates"
         ]
       }
     },
-    "NuGet.Build.Tasks.Pack" : {
+    "NuGet.Build.Tasks.Pack": {
       "version": "6.9.1",
       "modules": [
         "Templates"
@@ -50,7 +50,10 @@
     }
   },
   "sql": {
-    "connectionString": "Server=localhost,1433;Database=Nike_Sabado;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;",
+    "connectionString": [
+      "Server=localhost,1433;Database=Nike_Sabado;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;",
+      "Data Source=(localdb)\\MSSQLLocalDB;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Application Name=\"SQL Server Management Studio\";Command Timeout=0"
+    ],
     "version": "0.0.0.1",
     "dsp": "Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider",
     "modelCollation": "1033, CI",
@@ -60,8 +63,8 @@
       "Nike.Database",
       "Entrega.Final"
     ],
-    "packages" : {
-      "Microsoft.SqlServer.DacFx" : {
+    "packages": {
+      "Microsoft.SqlServer.DacFx": {
         "version": "170.2.70",
         "modules": [
           "Templates"
