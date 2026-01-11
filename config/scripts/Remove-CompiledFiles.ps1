@@ -20,19 +20,19 @@ try {
     [String[]] $artifactDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "artifacts").FullName
 
     if(Test-Path -Path $corePath -PathType Leaf) {
-        Remove-Item -Path $corePath -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+        Remove-Item -Path $corePath -Force -Confirm:$false -ErrorAction SilentlyContinue
         "Core file has removed`n" | Out-Host
     }
 
     if($null -ne $buildDirectories) {
-        $buildDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+        $buildDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
         "Building directories are clean now" | Out-Host
     }
 
     if($null -ne $libDirectories) {
         foreach($directory in $libDirectories) {
             $dllFiles = Get-ChildItem -Path $directory -File -Recurse | Where-Object -Property Extension -like "*.dll" -ErrorAction Stop
-            $dllFiles | Remove-Item -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+            $dllFiles | Remove-Item -Force -Confirm:$false -ErrorAction SilentlyContinue
             $dllFiles = Get-ChildItem -Path $directory -File -Recurse | Where-Object -Property Extension -like "*.dll" -ErrorAction Stop
         }
 
@@ -47,7 +47,7 @@ try {
     }
 
     if($null -ne $artifactDirectories) {
-        $artifactDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+        $artifactDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
         "Artifact directories are clean now" | Out-Host
     }
 }

@@ -9,7 +9,7 @@ Param (
     [ValidateNotNullOrEmpty()]
     [System.String]
     $Arguments,
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [System.Boolean]
     $Privileged = $false
 )
@@ -20,16 +20,17 @@ $before = (Get-Host).UI.RawUI.ForegroundColor
 try {
     $dotnetArgs = @()
     $dotnetArgs = $dotnetArgs + $Command
-    $dotnetArgs = $dotnetArgs + ($Arguments -split "\s+")
+    # Robust argument splitting: matches quoted strings OR non-space sequences
+    $regex = '("[^"]*"|\S+)'
+    $dotnetArgs = $dotnetArgs + ([regex]::Matches($Arguments, $regex) | ForEach-Object { $_.Value.Trim('"') })
 
     $Host.UI.RawUI.ForegroundColor = "DarkGreen"
 
-    if($Privileged -and ([System.Environment]::OSVersion.Platform -ne "Win32NT")) {
+    if ($Privileged -and ([System.Environment]::OSVersion.Platform -ne "Win32NT")) {
         ("{0} [DOTNET CLI]: sudo dotnet {1} {2}" -f (Get-Date).ToString("yyyy/MM/dd HH:mm:ss"), $Command, $Arguments) | Out-Host
 
         $output = & sudo dotnet $dotnetArgs | Out-String
-    }
-    else{
+    } else {
         ("{0} [DOTNET CLI]: dotnet {1} {2}" -f (Get-Date).ToString("yyyy/MM/dd HH:mm:ss"), $Command, $Arguments) | Out-Host
 
         $output = & dotnet $dotnetArgs | Out-String
@@ -39,18 +40,15 @@ try {
         $Host.UI.RawUI.ForegroundColor = "Red"
         $output -join "; " | Out-Host
         throw "There was an issue running the specified dotnet command."
-    }
-    else {
+    } else {
         $Host.UI.RawUI.ForegroundColor = "DarkYellow"
         $output -join "; " | Out-Host
         $returnValue = $true
     }
-}
-catch {
+} catch {
     $Host.UI.RawUI.ForegroundColor = "Red"
     Write-Error -Message ("Found errors invoking .NET CLI: {0}" -f $_) -Category "InvalidOperation" -RecommendedAction "Review the captured error" -ErrorAction Stop
-}
-finally {
+} finally {
     $Host.UI.RawUI.ForegroundColor = $before
 }
 

@@ -20,22 +20,22 @@ try {
 
     $global = Get-Content -Path $GlobalPath -Raw -Encoding Ascii | ConvertFrom-Json
 
-    if($ModulesPath.Contains("Modules")) {
+    if ($ModulesPath.Contains("Modules")) {
         $moduleDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object -Property FullName -notmatch "Template|Imported"
     }
 
-    if(-not [System.String]::IsNullOrEmpty($global) -and $moduleDirectories.Length -gt 0) {
+    if (-not [System.String]::IsNullOrEmpty($global) -and $moduleDirectories.Length -gt 0) {
         "Creating projects based on global configuration..." | Out-Host
 
         $globalFileName = (Get-Item -Path $GlobalPath).Name
         [String] $organization = [System.String]::Empty
         [String] $team = [System.String]::Empty
 
-        if(-not [System.String]::IsNullOrEmpty($global.organization.name)) {
+        if (-not [System.String]::IsNullOrEmpty($global.organization.name)) {
             [String] $organization = $global.organization.name
         }
 
-        if(-not [System.String]::IsNullOrEmpty($global.organization.team)) {
+        if (-not [System.String]::IsNullOrEmpty($global.organization.team)) {
             [String] $team = $global.organization.team
         }
 
@@ -51,18 +51,18 @@ try {
                 $dotnetCommonProperties = New-Object "System.Collections.Generic.List[String]"
                 $dotnetModulesWithPackages = New-Object "System.Collections.Generic.List[String]"
 
-                if(-not [System.String]::IsNullOrEmpty($global.dotnet.version)) {
+                if (-not [System.String]::IsNullOrEmpty($global.dotnet.version)) {
                     [String] $dotnetVersion = $global.dotnet.version
                 }
 
-                if(-not [System.String]::IsNullOrEmpty($global.dotnet.runtime)) {
+                if (-not [System.String]::IsNullOrEmpty($global.dotnet.runtime)) {
                     [String] $dotnetRuntime = $global.dotnet.runtime
                 }
 
                 $dotnetConfigs = ($global.dotnet | Get-Member -MemberType NoteProperty).Name
 
-                if($dotnetConfigs -contains "modules") {
-                    foreach($mod in $global.dotnet.modules) {
+                if ($dotnetConfigs -contains "modules") {
+                    foreach ($mod in $global.dotnet.modules) {
                         if ($mod -notmatch "Template|Imported") {
                             $dotnetModules.Add($mod)
 
@@ -71,20 +71,20 @@ try {
                     }
                 }
 
-                if($dotnetConfigs -contains "common") {
+                if ($dotnetConfigs -contains "common") {
                     $dotnetExistingProperties = ($global.dotnet.common | Get-Member -MemberType NoteProperty).Name
 
-                    foreach($prop in $dotnetExistingProperties) {
+                    foreach ($prop in $dotnetExistingProperties) {
                         $dotnetCommonProperties.Add($prop)
 
                         ".NET Property [{0}] found in {1} file" -f $prop, $globalFileName | Out-Host
                     }
                 }
 
-                if($dotnetConfigs -contains "packages") {
+                if ($dotnetConfigs -contains "packages") {
                     $dotnetExistingPackages = ($global.dotnet.packages | Get-Member -MemberType NoteProperty).Name
 
-                    foreach($paq in $dotnetExistingPackages) {
+                    foreach ($paq in $dotnetExistingPackages) {
                         foreach ($mod in $global.dotnet.packages.$paq.modules) {
                             if ($mod -notmatch "Template|Imported") {
                                 $dotnetModulesWithPackages.Add($mod)
@@ -102,24 +102,24 @@ try {
                 $sqlModulesWithPackages = New-Object "System.Collections.Generic.List[String]"
                 $sqlConfigs = ($global.sql | Get-Member -MemberType NoteProperty).Name
 
-                if(-not [System.String]::IsNullOrEmpty($global.sql.version)) {
+                if (-not [System.String]::IsNullOrEmpty($global.sql.version)) {
                     [String] $sqlVersion = $global.sql.version
                 }
 
-                if(-not [System.String]::IsNullOrEmpty($global.sql.dsp)) {
+                if (-not [System.String]::IsNullOrEmpty($global.sql.dsp)) {
                     [String] $sqlDsp = $global.sql.dsp
                 }
 
-                if(-not [System.String]::IsNullOrEmpty($global.sql.modelCollation)) {
+                if (-not [System.String]::IsNullOrEmpty($global.sql.modelCollation)) {
                     [String] $sqlModelCollation = $global.sql.modelCollation
                 }
 
-                if(-not [System.String]::IsNullOrEmpty($global.sql.runSqlCodeAnalysis)) {
+                if (-not [System.String]::IsNullOrEmpty($global.sql.runSqlCodeAnalysis)) {
                     [String] $sqlRunSqlCodeAnalysis = $global.sql.runSqlCodeAnalysis
                 }
 
-                if($sqlConfigs -contains "modules") {
-                    foreach($mod in $global.sql.modules) {
+                if ($sqlConfigs -contains "modules") {
+                    foreach ($mod in $global.sql.modules) {
                         if ($mod -notmatch "Template|Imported") {
                             $sqlModules.Add($mod)
 
@@ -128,10 +128,10 @@ try {
                     }
                 }
 
-                if($sqlConfigs -contains "packages") {
+                if ($sqlConfigs -contains "packages") {
                     $sqlExistingPackages = ($global.sql.packages | Get-Member -MemberType NoteProperty).Name
 
-                    foreach($paq in $sqlExistingPackages) {
+                    foreach ($paq in $sqlExistingPackages) {
                         foreach ($mod in $global.sql.packages.$paq.modules) {
                             if ($mod -notmatch "Template|Imported") {
                                 $sqlModulesWithPackages.Add($mod)
@@ -151,9 +151,9 @@ try {
                 [String] $dotnetProjectBaseName = "{0}.csproj" -f $directoryProject.BaseName
                 [String] $dotnetProjectFullName = Join-Path -Path $directoryProject.FullName -ChildPath $dotnetProjectBaseName
 
-                $dotnetProjectFile = New-Object System.XMl.XmlTextWriter($dotnetProjectFullName,$Null)
+                $dotnetProjectFile = New-Object System.XMl.XmlTextWriter($dotnetProjectFullName, $Null)
 
-                if(Test-Path -Path $dotnetProjectFullName -PathType Leaf) {
+                if (Test-Path -Path $dotnetProjectFullName -PathType Leaf) {
                     $dotnetProjectFile.Formatting = 'Indented'
                     $dotnetProjectFile.Indentation = 1
                     $dotnetProjectFile.IndentChar = "`t"
@@ -171,10 +171,10 @@ try {
                     [String] $dotnetUtilitiesPath = Join-Path -Path $directoryProject.FullName -ChildPath "Utilities"
                     [String] $dotnetAppPath = Join-Path -Path $directoryProject.FullName -ChildPath "App"
 
-                    if(Test-Path -Path $dotnetTypesPath -PathType Container) {
+                    if (Test-Path -Path $dotnetTypesPath -PathType Container) {
                         $dotnetTypesPathClassLibraries = Get-ChildItem -Path $dotnetTypesPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetTypesPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetTypesPathClassLibraries.FullName) {
                             $dotnetRelativeTypesClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -183,10 +183,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetControlsPath -PathType Container) {
+                    if (Test-Path -Path $dotnetControlsPath -PathType Container) {
                         $dotnetControlsPathClassLibraries = Get-ChildItem -Path $dotnetControlsPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetControlsPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetControlsPathClassLibraries.FullName) {
                             $dotnetRelativeControlsClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -195,10 +195,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetEnumsPath -PathType Container) {
+                    if (Test-Path -Path $dotnetEnumsPath -PathType Container) {
                         $dotnetEnumsPathClassLibraries = Get-ChildItem -Path $dotnetEnumsPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetEnumsPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetEnumsPathClassLibraries.FullName) {
                             $dotnetRelativeEnumsClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -207,10 +207,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetInfoPath -PathType Container) {
+                    if (Test-Path -Path $dotnetInfoPath -PathType Container) {
                         $dotnetInfoPathClassLibraries = Get-ChildItem -Path $dotnetInfoPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetInfoPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetInfoPathClassLibraries.FullName) {
                             $dotnetRelativeInfoClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -219,10 +219,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetPropertiesPath -PathType Container) {
+                    if (Test-Path -Path $dotnetPropertiesPath -PathType Container) {
                         $dotnetPropertiesPathClassLibraries = Get-ChildItem -Path $dotnetPropertiesPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetPropertiesPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetPropertiesPathClassLibraries.FullName) {
                             $dotnetRelativePropertiesClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -231,10 +231,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetUtilitiesPath -PathType Container) {
+                    if (Test-Path -Path $dotnetUtilitiesPath -PathType Container) {
                         $dotnetUtilitiesPathClassLibraries = Get-ChildItem -Path $dotnetUtilitiesPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetUtilitiesPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetUtilitiesPathClassLibraries.FullName) {
                             $dotnetRelativeUtilitiesClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -243,10 +243,10 @@ try {
                         }
                     }
 
-                    if(Test-Path -Path $dotnetAppPath -PathType Container) {
+                    if (Test-Path -Path $dotnetAppPath -PathType Container) {
                         $dotnetAppPathClassLibraries = Get-ChildItem -Path $dotnetAppPath -File | Where-Object -Property FullName -like "*.cs"
 
-                        foreach($class in $dotnetAppPathClassLibraries.FullName) {
+                        foreach ($class in $dotnetAppPathClassLibraries.FullName) {
                             $dotnetRelativeAppClass = Resolve-Path -Path $class -Relative
 
                             $dotnetProjectFile.WriteStartElement('Compile')
@@ -255,10 +255,10 @@ try {
                         }
                     }
 
-                    if(($dotnetConfigs -contains "packages") -and
-                    ($dotnetModulesWithPackages -contains $directoryProject.BaseName)) {
-                        foreach($dependency in $dotnetExistingPackages) {
-                            if($global.dotnet.packages.$dependency.modules -contains $directoryProject.BaseName) {
+                    if (($dotnetConfigs -contains "packages") -and
+                        ($dotnetModulesWithPackages -contains $directoryProject.BaseName)) {
+                        foreach ($dependency in $dotnetExistingPackages) {
+                            if ($global.dotnet.packages.$dependency.modules -contains $directoryProject.BaseName) {
                                 $versionName = $global.dotnet.packages.$dependency.version
 
                                 $dotnetProjectFile.WriteStartElement('PackageReference')
@@ -273,16 +273,16 @@ try {
 
                     $dotnetProjectFile.WriteEndElement()
                     $dotnetProjectFile.WriteStartElement('PropertyGroup')
-                    $dotnetProjectFile.WriteElementString('PackageId',$directoryProject.BaseName)
-                    $dotnetProjectFile.WriteElementString('Version',$dotnetVersion)
-                    $dotnetProjectFile.WriteElementString('Authors',$team)
-                    $dotnetProjectFile.WriteElementString('Company',$organization)
-                    $dotnetProjectFile.WriteElementString('TargetFramework',$dotnetRuntime)
+                    $dotnetProjectFile.WriteElementString('PackageId', $directoryProject.BaseName)
+                    $dotnetProjectFile.WriteElementString('Version', $dotnetVersion)
+                    $dotnetProjectFile.WriteElementString('Authors', $team)
+                    $dotnetProjectFile.WriteElementString('Company', $organization)
+                    $dotnetProjectFile.WriteElementString('TargetFramework', $dotnetRuntime)
 
-                    if($dotnetCommonProperties.Count -gt 0) {
-                        foreach($prop in $dotnetCommonProperties) {
+                    if ($dotnetCommonProperties.Count -gt 0) {
+                        foreach ($prop in $dotnetCommonProperties) {
                             $value = $global.dotnet.common.$prop
-                            $dotnetProjectFile.WriteElementString($prop,$value)
+                            $dotnetProjectFile.WriteElementString($prop, $value)
                         }
                     }
                 }
@@ -294,32 +294,28 @@ try {
                 ".NET Project file created at {0}" -f $dotnetProjectFullName | Out-Host
             }
 
-            if($null -ne $sqlModules -and $sqlModules.Contains($directoryProject.BaseName)) {
+            if ($null -ne $sqlModules -and $sqlModules.Contains($directoryProject.BaseName)) {
                 [String] $sqlProjectBaseName = "{0}.sqlproj" -f $directoryProject.BaseName
                 [String] $sqlProjectFullName = Join-Path -Path $directoryProject.FullName -ChildPath $sqlProjectBaseName
                 [String] $sqlProjectGuid = [System.Guid]::NewGuid().ToString("B").ToUpper()
 
-                $sqlProjectFile = New-Object System.XMl.XmlTextWriter($sqlProjectFullName,$Null)
+                $sqlProjectFile = New-Object System.XMl.XmlTextWriter($sqlProjectFullName, $Null)
 
-                if(Test-Path -Path $sqlProjectFullName -PathType Leaf) {
+                if (Test-Path -Path $sqlProjectFullName -PathType Leaf) {
                     $sqlProjectFile.Formatting = 'Indented'
                     $sqlProjectFile.Indentation = 1
                     $sqlProjectFile.IndentChar = "`t"
                     $sqlProjectFile.WriteStartDocument()
                     $sqlProjectFile.WriteComment($repositoryDirectoryName)
                     $sqlProjectFile.WriteStartElement('Project')
+                    $sqlProjectFile.WriteAttributeString('Sdk', 'Microsoft.Build.Sql/2.0.0')
                     $sqlProjectFile.WriteAttributeString('DefaultTargets', 'Build')
-                    $sqlProjectFile.WriteStartElement('Sdk')
-                    $sqlProjectFile.WriteAttributeString('Name', 'Microsoft.Build.Sql')
-                    $sqlProjectFile.WriteAttributeString('Version', '2.0.0')
-
-                    $sqlProjectFile.WriteEndElement()
                     $sqlProjectFile.WriteStartElement('ItemGroup')
 
-                    if(($sqlConfigs -contains "packages") -and
-                    ($sqlModulesWithPackages -contains $directoryProject.BaseName)) {
-                        foreach($dependency in $sqlExistingPackages) {
-                            if($global.sql.packages.$dependency.modules -contains $directoryProject.BaseName) {
+                    if (($sqlConfigs -contains "packages") -and
+                        ($sqlModulesWithPackages -contains $directoryProject.BaseName)) {
+                        foreach ($dependency in $sqlExistingPackages) {
+                            if ($global.sql.packages.$dependency.modules -contains $directoryProject.BaseName) {
                                 $versionName = $global.sql.packages.$dependency.version
 
                                 $sqlProjectFile.WriteStartElement('PackageReference')
@@ -332,48 +328,48 @@ try {
                         }
                     }
 
-                    $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -in @("Databases","Tables","Users","Programmability", "Security", "Views")}
-                    $sqlQueriesDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object {$_ -like "Queries*"}
-                    $sqlPublishProfiles = (Get-ChildItem -Path $directoryProject.FullName -File).Name | Where-Object {$_ -like "*.publish.xml"}
-                    $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object {$_ -like "*.dacpac"}
+                    $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -in @("Databases", "Tables", "Users", "Programmability", "Security", "Views") }
+                    $sqlQueriesDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -like "Queries*" }
+                    $sqlPublishProfiles = (Get-ChildItem -Path $directoryProject.FullName -File).Name | Where-Object { $_ -like "*.publish.xml" }
+                    $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object { $_ -like "*.dacpac" }
 
-                    foreach($sqlDirectory in $sqlModuleDirectories) {
+                    foreach ($sqlDirectory in $sqlModuleDirectories) {
                         $sqlProjectFile.WriteStartElement('Folder')
-                        $sqlProjectFile.WriteAttributeString('Include',$sqlDirectory)
+                        $sqlProjectFile.WriteAttributeString('Include', $sqlDirectory)
                         $sqlProjectFile.WriteEndElement()
                     }
 
-                    foreach($sqlDirectory in $sqlQueriesDirectories) {
+                    foreach ($sqlDirectory in $sqlQueriesDirectories) {
                         $sqlProjectFile.WriteStartElement('Build')
-                        $sqlProjectFile.WriteAttributeString('Remove','Queries\**\*.sql')
+                        $sqlProjectFile.WriteAttributeString('Remove', 'Queries\**\*.sql')
                         $sqlProjectFile.WriteEndElement()
                     }
 
-                    foreach($publishProfile in $sqlPublishProfiles) {
+                    foreach ($publishProfile in $sqlPublishProfiles) {
                         $sqlProjectFile.WriteStartElement('None')
-                        $sqlProjectFile.WriteAttributeString('Include',$publishProfile)
+                        $sqlProjectFile.WriteAttributeString('Include', $publishProfile)
                         $sqlProjectFile.WriteEndElement()
                     }
 
-                    foreach($dacpacFile in $sqlDacpacFiles) {
+                    foreach ($dacpacFile in $sqlDacpacFiles) {
                         # Convert absolute path to relative path for better portability
                         $relativeDacpacPath = Resolve-Path -Path $dacpacFile -Relative
 
                         $sqlProjectFile.WriteStartElement('ArtifactReference')
-                        $sqlProjectFile.WriteAttributeString('Include',$relativeDacpacPath)
+                        $sqlProjectFile.WriteAttributeString('Include', $relativeDacpacPath)
                         $sqlProjectFile.WriteEndElement()
                     }
 
                     $sqlProjectFile.WriteEndElement()
                     $sqlProjectFile.WriteStartElement('PropertyGroup')
-                    $sqlProjectFile.WriteElementString('PackageId',$directoryProject.BaseName)
-                    $sqlProjectFile.WriteElementString('Version',$sqlVersion)
-                    $sqlProjectFile.WriteElementString('Authors',$team)
-                    $sqlProjectFile.WriteElementString('Company',$organization)
-                    $sqlProjectFile.WriteElementString('DSP',$sqlDsp)
-                    $sqlProjectFile.WriteElementString('ModelCollation',$sqlModelCollation)
-                    $sqlProjectFile.WriteElementString('ProjectGuid',$sqlProjectGuid)
-                    $sqlProjectFile.WriteElementString('RunSqlCodeAnalysis',$sqlRunSqlCodeAnalysis)
+                    $sqlProjectFile.WriteElementString('PackageId', $directoryProject.BaseName)
+                    $sqlProjectFile.WriteElementString('Version', $sqlVersion)
+                    $sqlProjectFile.WriteElementString('Authors', $team)
+                    $sqlProjectFile.WriteElementString('Company', $organization)
+                    $sqlProjectFile.WriteElementString('DSP', $sqlDsp)
+                    $sqlProjectFile.WriteElementString('ModelCollation', $sqlModelCollation)
+                    $sqlProjectFile.WriteElementString('ProjectGuid', $sqlProjectGuid)
+                    $sqlProjectFile.WriteElementString('RunSqlCodeAnalysis', $sqlRunSqlCodeAnalysis)
                 }
 
                 $sqlProjectFile.WriteEndElement()
@@ -383,18 +379,15 @@ try {
                 "SQL Server Project file created at {0}" -f $sqlProjectFullName | Out-Host
             }
         }
-    }
-    else {
+    } else {
         "No projects have been created based on global configuration." | Out-Host
     }
 
     $returnValue = $true
-}
-catch {
+} catch {
     $Host.UI.RawUI.ForegroundColor = "Red"
     Write-Error -Message ("Found errors creating projects on module directories: {0}" -f $_) -Category "InvalidOperation" -RecommendedAction "Review the captured error" -ErrorAction Stop
-}
-finally {
+} finally {
     $Host.UI.RawUI.ForegroundColor = $before
     Set-Location -Path $originalPath
 }

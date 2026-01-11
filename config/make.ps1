@@ -34,42 +34,40 @@ $scriptSystemBlock = [System.Management.Automation.ScriptBlock]::Create($systemS
 $invokeDotNetCoreScriptPath | Out-Host
 #endregion
 
-if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
+if (Invoke-Command -ScriptBlock $scriptSystemBlock) {
     switch ($Task) {
         Init {
-                if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
-                    try {
-                        if ($IsWindows) {
-                            if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
-                                "Instalando el proveedor de NuGet...`n" | Out-Host
-                                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser -ErrorAction Stop
-                            }
+            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
+                try {
+                    if ($IsWindows) {
+                        if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
+                            "Instalando el proveedor de NuGet...`n" | Out-Host
+                            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser -ErrorAction Stop
                         }
+                    }
 
-                        Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
-                        Import-Module PSScriptAnalyzer -ErrorAction Stop
-                    }
-                    catch {
-                        Write-Warning "No se pudo instalar ni importar PSScriptAnalyzer: $($_.Exception.Message)`n"
-                    }
-                }
-                else {
+                    Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
                     Import-Module PSScriptAnalyzer -ErrorAction Stop
+                } catch {
+                    Write-Warning "No se pudo instalar ni importar PSScriptAnalyzer: $($_.Exception.Message)`n"
                 }
+            } else {
+                Import-Module PSScriptAnalyzer -ErrorAction Stop
+            }
 
-                [String] $rootTemplateContent = Get-Content -Path $rootScriptModuleTemplate -Raw
-                $rootScriptModule = New-Item -Path $rootPath -Name ("{0}.psm1" -f $module) -ItemType File -Value $rootTemplateContent -Force
+            [String] $rootTemplateContent = Get-Content -Path $rootScriptModuleTemplate -Raw
+            $rootScriptModule = New-Item -Path $rootPath -Name ("{0}.psm1" -f $module) -ItemType File -Value $rootTemplateContent -Force
 
-                if(Test-Path -Path $rootScriptModule.FullName -PathType Leaf) {
-                    ("{0} Module {1} have been created successfully`n" -f [Char]8730, $rootScriptModule.BaseName) | Out-Host
-                }
+            if (Test-Path -Path $rootScriptModule.FullName -PathType Leaf) {
+                ("{0} Module {1} have been created successfully`n" -f [Char]8730, $rootScriptModule.BaseName) | Out-Host
+            }
         }
         PowershellAnalysis {
             [String] $pwshAnalysisScriptPath = Join-Path -Path $scriptsPath -ChildPath "New-PowerShellAnalysis.ps1"
             [String] $pwshAnalysisScriptToRun = "{0} -RootPath {1} -Config {2}" -f $pwshAnalysisScriptPath, $rootPath, $analysisConfig
             $pwshScriptAnalysisBlock = [System.Management.Automation.ScriptBlock]::Create($pwshAnalysisScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $pwshScriptAnalysisBlock) {
+            if (Invoke-Command -ScriptBlock $pwshScriptAnalysisBlock) {
                 ("{0} The code have been verified successfully`n" -f [Char]8730) | Out-Host
             }
         }
@@ -78,7 +76,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $sqlAnalysisScriptToRun = "{0} -ModulesPath {1}" -f $sqlAnalysisScriptPath, $modulesPath
             $sqlScriptAnalysisBlock = [System.Management.Automation.ScriptBlock]::Create($sqlAnalysisScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $sqlScriptAnalysisBlock) {
+            if (Invoke-Command -ScriptBlock $sqlScriptAnalysisBlock) {
                 ("{0} SQL Server code analysis completed successfully`n" -f [Char]8730) | Out-Host
             }
         }
@@ -87,7 +85,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $sqlLintScriptToRun = "{0} -ModulesPath {1}" -f $sqlLintScriptPath, $modulesPath
             $sqlScriptLintBlock = [System.Management.Automation.ScriptBlock]::Create($sqlLintScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $sqlScriptLintBlock) {
+            if (Invoke-Command -ScriptBlock $sqlScriptLintBlock) {
                 ("{0} SQL Server linting completed successfully`n" -f [Char]8730) | Out-Host
             }
         }
@@ -96,7 +94,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $createSolutionScriptToRun = "{0} -RootPath {1} -FunctionsPath {2}" -f $createSolutionScriptPath, $rootPath, $invokeDotNetCoreScriptPath
             $scriptCreateSolutionBlock = [System.Management.Automation.ScriptBlock]::Create($createSolutionScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptCreateSolutionBlock) {
+            if (Invoke-Command -ScriptBlock $scriptCreateSolutionBlock) {
                 ("{0} .NET Solution is ready`n" -f [Char]8730) | Out-Host
             }
         }
@@ -105,7 +103,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $updateWorkloadScriptToRun = "{0} -RootPath {1} -FunctionsPath {2}" -f $updateWorkloadScriptPath, $rootPath, $invokeDotNetCoreScriptPath
             $scriptUpdateWorkloadBlock = [System.Management.Automation.ScriptBlock]::Create($updateWorkloadScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptUpdateWorkloadBlock) {
+            if (Invoke-Command -ScriptBlock $scriptUpdateWorkloadBlock) {
                 ("{0} .NET workload is ready`n" -f [Char]8730) | Out-Host
             }
         }
@@ -114,14 +112,14 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $createProjectsScriptToRun = "{0} -ModulesPath {1} -GlobalPath {2}" -f $createProjectsScriptPath, $modulesPath, $globalPath
             $scriptCreateProjectsBlock = [System.Management.Automation.ScriptBlock]::Create($createProjectsScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptCreateProjectsBlock) {
+            if (Invoke-Command -ScriptBlock $scriptCreateProjectsBlock) {
                 ("{0} .NET Projects has been regenerated`n" -f [Char]8730) | Out-Host
 
                 [String] $addProjectsScriptPath = Join-Path -Path $scriptsPath -ChildPath "Import-Projects.ps1"
                 [String] $addProjectsScriptToRun = "{0} -ProjectsPath {1} -FunctionsPath {2}" -f $addProjectsScriptPath, $modulesPath, $invokeDotNetCoreScriptPath
                 $scriptAddProjectsBlock = [System.Management.Automation.ScriptBlock]::Create($addProjectsScriptToRun)
 
-                if(Invoke-Command -ScriptBlock $scriptAddProjectsBlock) {
+                if (Invoke-Command -ScriptBlock $scriptAddProjectsBlock) {
                     ("{0} .NET Projects has been added to the solution`n" -f [Char]8730) | Out-Host
                 }
             }
@@ -138,18 +136,18 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             ("{0} .NET Solution have been formated successfully`n" -f [Char]8730) | Out-Host
         }
         DotnetRestore {
-            [String] $dotnetRestoreScriptToRun = ('{0} -Command restore -Arguments "{1} --no-cache"' -f $invokeDotNetCoreScriptPath, $rootPath)
+            [String] $dotnetRestoreScriptToRun = ('{0} -Command restore -Arguments "`"{1}`" --no-cache"' -f $invokeDotNetCoreScriptPath, $rootPath)
             $scriptDotnetRestoreBlock = [System.Management.Automation.ScriptBlock]::Create($dotnetRestoreScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptDotnetRestoreBlock) {
+            if (Invoke-Command -ScriptBlock $scriptDotnetRestoreBlock) {
                 ("{0} .NET Solution have been restored successfully`n" -f [Char]8730) | Out-Host
             }
         }
         DotnetBuild {
-            [String] $dotnetBuildScriptToRun = ('{0} -Command build -Arguments "{1} --configuration Release --no-restore"' -f $invokeDotNetCoreScriptPath, $rootPath)
+            [String] $dotnetBuildScriptToRun = ('{0} -Command build -Arguments "`"{1}`" --configuration Release --no-restore"' -f $invokeDotNetCoreScriptPath, $rootPath)
             $scriptDotnetBuildBlock = [System.Management.Automation.ScriptBlock]::Create($dotnetBuildScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptDotnetBuildBlock) {
+            if (Invoke-Command -ScriptBlock $scriptDotnetBuildBlock) {
                 ("{0} Class Libraries has been built`n" -f [Char]8730) | Out-Host
             }
         }
@@ -158,7 +156,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $removeScriptToRun = "{0} -RootPath {1}" -f $removeScriptPath, $rootPath
             $scriptRemoveBlock = [System.Management.Automation.ScriptBlock]::Create($removeScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptRemoveBlock) {
+            if (Invoke-Command -ScriptBlock $scriptRemoveBlock) {
                 ("{0} Compiled files are cleaned`n" -f [Char]8730) | Out-Host
             }
         }
@@ -167,7 +165,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $publishDotNetScriptToRun = "{0} -ProjectsPath {1} -FunctionsPath {2} -DotNetVersion {3}" -f $publishDotNetScriptPath, $modulesPath, $scriptsPath, $dotnetRuntime
             $scriptPublishDotNetBlock = [System.Management.Automation.ScriptBlock]::Create($publishDotNetScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptPublishDotNetBlock) {
+            if (Invoke-Command -ScriptBlock $scriptPublishDotNetBlock) {
                 ("{0} .NET Projects has been published`n" -f [Char]8730) | Out-Host
             }
         }
@@ -175,17 +173,17 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             $rootModuleName = Get-Item -Path $rootPath
             [String] $rootModuleFile = "{0}/{1}.psm1" -f $rootPath, $rootModuleName.BaseName
 
-            if(Test-Path -Path $rootModuleFile -PathType Leaf) {
+            if (Test-Path -Path $rootModuleFile -PathType Leaf) {
                 [String] $importModulesScriptPath = Join-Path -Path $scriptsPath -ChildPath "Import-Modules.ps1"
                 [String] $importModulesScriptToRun = "{0} -Path {1}" -f $importModulesScriptPath, $rootPath
                 $scriptImportModulesBlock = [System.Management.Automation.ScriptBlock]::Create($importModulesScriptToRun)
 
-                if(Invoke-Command -ScriptBlock $scriptImportModulesBlock) {
+                if (Invoke-Command -ScriptBlock $scriptImportModulesBlock) {
                     [String] $initializeScriptPath = Join-Path -Path $scriptsPath -ChildPath "Initialize-Module.ps1"
                     [String] $initializeScriptToRun = "{0} -Manifiest {1}" -f $initializeScriptPath, $manifiest
                     $scriptInitializeBlock = [System.Management.Automation.ScriptBlock]::Create($initializeScriptToRun)
 
-                    if(Invoke-Command -ScriptBlock $scriptInitializeBlock) {
+                    if (Invoke-Command -ScriptBlock $scriptInitializeBlock) {
                         ("{0} All modules has been imported`n" -f [Char]8730) | Out-Host
                     }
                 }
@@ -196,7 +194,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $publishModulesScriptToRun = "{0} -Path {1} -ApiKey {2}" -f $publishModulesScriptPath, $rootPath, $ApiKey
             $scriptPublishModulesBlock = [System.Management.Automation.ScriptBlock]::Create($publishModulesScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptPublishModulesBlock) {
+            if (Invoke-Command -ScriptBlock $scriptPublishModulesBlock) {
                 ("{0} Module has been published in the PowerShell Gallery`n" -f [Char]8730) | Out-Host
             }
         }
@@ -205,7 +203,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             # Set environment variable for development container
             $env:SQL_PASSWORD = "P@ssw0rd"
 
-            if(& $sqlProfileScriptPath -ModulesPath $modulesPath -ServerInstance localhost -Port 1433 -User sa) {
+            if (& $sqlProfileScriptPath -ModulesPath $modulesPath -ServerInstance localhost -Port 1433 -User sa) {
                 ("{0} SQL Server publish profiles created successfully`n" -f [Char]8730) | Out-Host
             }
 
@@ -217,7 +215,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $testSqlConnectionScriptToRun = "{0} -ModulesPath {1}" -f $testSqlConnectionScriptPath, $modulesPath
             $scriptTestSqlConnectionBlock = [System.Management.Automation.ScriptBlock]::Create($testSqlConnectionScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptTestSqlConnectionBlock) {
+            if (Invoke-Command -ScriptBlock $scriptTestSqlConnectionBlock) {
                 ("{0} SQL Server connection tests passed successfully`n" -f [Char]8730) | Out-Host
             }
         }
@@ -226,7 +224,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $SqlDacpacScriptToRun = "{0} -ModulesPath {1} -FunctionsPath {2}" -f $SqlDacpacScriptPath, $modulesPath, $scriptsPath
             $scriptSqlDacpacBlock = [System.Management.Automation.ScriptBlock]::Create($SqlDacpacScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptSqlDacpacBlock) {
+            if (Invoke-Command -ScriptBlock $scriptSqlDacpacBlock) {
                 ("{0} SQL Server artifacts have been built`n" -f [Char]8730) | Out-Host
             }
         }
@@ -235,7 +233,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $sqlPublishScriptToRun = "{0} -ModulesPath {1}" -f $sqlPublishScriptPath, $modulesPath
             $scriptSqlPublishBlock = [System.Management.Automation.ScriptBlock]::Create($sqlPublishScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptSqlPublishBlock) {
+            if (Invoke-Command -ScriptBlock $scriptSqlPublishBlock) {
                 ("{0} SQL Server databases published successfully`n" -f [Char]8730) | Out-Host
             }
         }
@@ -244,7 +242,7 @@ if(Invoke-Command -ScriptBlock $scriptSystemBlock) {
             [String] $sqlBacpacScriptToRun = "{0} -ModulesPath {1}" -f $sqlBacpacScriptPath, $modulesPath
             $scriptSqlBacpacBlock = [System.Management.Automation.ScriptBlock]::Create($sqlBacpacScriptToRun)
 
-            if(Invoke-Command -ScriptBlock $scriptSqlBacpacBlock) {
+            if (Invoke-Command -ScriptBlock $scriptSqlBacpacBlock) {
                 ("{0} SQL Server BACPAC artifacts created successfully`n" -f [Char]8730) | Out-Host
             }
         }

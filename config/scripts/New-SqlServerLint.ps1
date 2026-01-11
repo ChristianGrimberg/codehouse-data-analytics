@@ -41,8 +41,7 @@ try {
                 "Found SQLFluff: {0}" -f $sqlFluffCheck | Out-Host
                 $toolsChecked += "SQLFluff"
             }
-        }
-        catch {
+        } catch {
             # SQLFluff not available - will use fallback validation
             Write-Verbose "SQLFluff not available" -Verbose:$false
         }
@@ -57,8 +56,7 @@ try {
                 "Found TSqlLint in dotnet global tools" | Out-Host
                 $toolsChecked += "TSqlLint"
             }
-        }
-        catch {
+        } catch {
             # TSqlLint not available - will use fallback validation
             Write-Verbose "TSqlLint not available" -Verbose:$false
         }
@@ -79,11 +77,11 @@ try {
                     # Basic validations
                     if ([string]::IsNullOrWhiteSpace($content)) {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "EMPTY-FILE"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "EMPTY-FILE"
                             Severity = "Warning"
-                            Message = "Empty SQL file"
+                            Message  = "Empty SQL file"
                         }
                         $warningIssues++
                         $totalIssues++
@@ -95,11 +93,11 @@ try {
                     # Check for SELECT *
                     if ($contentLower -match "select\s+\*\s+from") {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "SELECT-STAR"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "SELECT-STAR"
                             Severity = "Information"
-                            Message = "SELECT * detected - consider specifying explicit columns"
+                            Message  = "SELECT * detected - consider specifying explicit columns"
                         }
                         $informationalIssues++
                     }
@@ -108,11 +106,11 @@ try {
                     # Note: This is a basic check and may have false positives with CTEs, JOINs, or subqueries
                     if (($contentLower -match "\bdelete\s+from\b" -or $contentLower -match "\bupdate\b.*\bset\b") -and -not ($contentLower -match "\bwhere\b")) {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "MISSING-WHERE"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "MISSING-WHERE"
                             Severity = "Critical"
-                            Message = "DELETE or UPDATE without WHERE clause detected - verify this is intentional (may be false positive with CTEs/JOINs)"
+                            Message  = "DELETE or UPDATE without WHERE clause detected - verify this is intentional (may be false positive with CTEs/JOINs)"
                         }
                         $criticalIssues++
                         $totalIssues++
@@ -121,11 +119,11 @@ try {
                     # Check for SQL injection vulnerabilities (dynamic SQL without sp_executesql)
                     if ($contentLower -match "exec\s*\(" -and -not ($contentLower -match "sp_executesql")) {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "DYNAMIC-SQL"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "DYNAMIC-SQL"
                             Severity = "Warning"
-                            Message = "Dynamic SQL with EXEC detected - consider using sp_executesql for parameterization"
+                            Message  = "Dynamic SQL with EXEC detected - consider using sp_executesql for parameterization"
                         }
                         $warningIssues++
                         $totalIssues++
@@ -134,11 +132,11 @@ try {
                     # Check for NOLOCK hint
                     if ($contentLower -match "with\s*\(\s*nolock\s*\)") {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "NOLOCK-HINT"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "NOLOCK-HINT"
                             Severity = "Information"
-                            Message = "NOLOCK hint detected - be aware of dirty reads possibility"
+                            Message  = "NOLOCK hint detected - be aware of dirty reads possibility"
                         }
                         $informationalIssues++
                     }
@@ -148,11 +146,11 @@ try {
                     if ($contentLower -match "from\s+$objectNamePattern\s" -and -not ($contentLower -match "from\s+$objectNamePattern\.$objectNamePattern")) {
                         # This is a simplified check - might have false positives
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "SCHEMA-QUALIFICATION"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "SCHEMA-QUALIFICATION"
                             Severity = "Information"
-                            Message = "Consider using schema-qualified object names (e.g., dbo.TableName)"
+                            Message  = "Consider using schema-qualified object names (e.g., dbo.TableName)"
                         }
                         $informationalIssues++
                     }
@@ -160,11 +158,11 @@ try {
                     # Check for cursors (performance concern)
                     if ($contentLower -match "\bdeclare\s+\w+\s+cursor\b") {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "CURSOR-USAGE"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "CURSOR-USAGE"
                             Severity = "Information"
-                            Message = "CURSOR detected - consider set-based alternatives for better performance"
+                            Message  = "CURSOR detected - consider set-based alternatives for better performance"
                         }
                         $informationalIssues++
                     }
@@ -176,11 +174,11 @@ try {
                         $hasCatch = $contentLower -match "\bcatch\b"
                         if (-not ($hasTry -and $hasCatch)) {
                             $lintResults += [PSCustomObject]@{
-                                File = $sqlFile.Name
-                                Line = 0
-                                Rule = "ERROR-HANDLING"
+                                File     = $sqlFile.Name
+                                Line     = 0
+                                Rule     = "ERROR-HANDLING"
                                 Severity = "Information"
-                                Message = "Stored procedure without TRY-CATCH error handling"
+                                Message  = "Stored procedure without TRY-CATCH error handling"
                             }
                             $informationalIssues++
                         }
@@ -189,30 +187,28 @@ try {
                     # Check for BEGIN TRANSACTION without proper COMMIT/ROLLBACK
                     if ($contentLower -match "begin\s+tran" -and -not ($contentLower -match "(commit|rollback)\s+tran")) {
                         $lintResults += [PSCustomObject]@{
-                            File = $sqlFile.Name
-                            Line = 0
-                            Rule = "TRANSACTION-MANAGEMENT"
+                            File     = $sqlFile.Name
+                            Line     = 0
+                            Rule     = "TRANSACTION-MANAGEMENT"
                             Severity = "Warning"
-                            Message = "BEGIN TRANSACTION without corresponding COMMIT/ROLLBACK"
+                            Message  = "BEGIN TRANSACTION without corresponding COMMIT/ROLLBACK"
                         }
                         $warningIssues++
                         $totalIssues++
                     }
-                }
-                catch {
+                } catch {
                     $lintResults += [PSCustomObject]@{
-                        File = $sqlFile.Name
-                        Line = 0
-                        Rule = "ANALYSIS-ERROR"
+                        File     = $sqlFile.Name
+                        Line     = 0
+                        Rule     = "ANALYSIS-ERROR"
                         Severity = "Critical"
-                        Message = "Error analyzing file: $_"
+                        Message  = "Error analyzing file: $_"
                     }
                     $criticalIssues++
                     $totalIssues++
                 }
             }
-        }
-        else {
+        } else {
             # Use external linting tools if available
             "" | Out-Host
             "Using external linting tools: {0}" -f ($toolsChecked -join ", ") | Out-Host
@@ -225,7 +221,7 @@ try {
                 if ($sqlFluffAvailable) {
                     try {
                         # Run SQLFluff in lint mode
-                        $sqlFluffOutput = & python -m sqlfluff lint $sqlFile.FullName --dialect tsql --format json 2>&1
+                        $sqlFluffOutput = & python -m sqlfluff lint "$($sqlFile.FullName)" --dialect tsql --format json 2>&1
 
                         if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq 1) {
                             # Parse JSON output
@@ -241,18 +237,17 @@ try {
                                             }
 
                                             $lintResults += [PSCustomObject]@{
-                                                File = $sqlFile.Name
-                                                Line = $v.line_no
-                                                Rule = $v.rule_code
+                                                File     = $sqlFile.Name
+                                                Line     = $v.line_no
+                                                Rule     = $v.rule_code
                                                 Severity = $severity
-                                                Message = $v.description
+                                                Message  = $v.description
                                             }
                                             $informationalIssues++
                                         }
                                     }
                                 }
-                            }
-                            catch {
+                            } catch {
                                 # Could not parse JSON, fall back to text output
                                 if ($sqlFluffOutput -match "violation") {
                                     $warningIssues++
@@ -260,8 +255,7 @@ try {
                                 }
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         "Warning: SQLFluff failed for {0}: {1}" -f $sqlFile.Name, $_ | Out-Host
                     }
                 }
@@ -269,7 +263,7 @@ try {
                 # Try TSqlLint
                 if ($tsqllintAvailable) {
                     try {
-                        $tsqllintOutput = & dotnet tool run tsqllint $sqlFile.FullName 2>&1
+                        $tsqllintOutput = & dotnet tool run tsqllint "$($sqlFile.FullName)" 2>&1
 
                         # Parse TSqlLint output
                         foreach ($line in $tsqllintOutput) {
@@ -279,23 +273,21 @@ try {
                                     $severity = "Critical"
                                     $criticalIssues++
                                     $totalIssues++
-                                }
-                                else {
+                                } else {
                                     $warningIssues++
                                     $totalIssues++
                                 }
 
                                 $lintResults += [PSCustomObject]@{
-                                    File = $sqlFile.Name
-                                    Line = 0
-                                    Rule = "TSQLLINT"
+                                    File     = $sqlFile.Name
+                                    Line     = 0
+                                    Rule     = "TSQLLINT"
                                     Severity = $severity
-                                    Message = $line
+                                    Message  = $line
                                 }
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         "Warning: TSqlLint failed for {0}: {1}" -f $sqlFile.Name, $_ | Out-Host
                     }
                 }
@@ -339,13 +331,11 @@ try {
         if ($criticalIssues -gt 0) {
             $Host.UI.RawUI.ForegroundColor = "Red"
             Write-Error -Message "SQL Linting found {0} critical issues that must be fixed!" -f $criticalIssues -Category "InvalidResult" -RecommendedAction "Review and fix the critical SQL linting issues" -ErrorAction Stop
-        }
-        elseif ($totalIssues -gt 0) {
+        } elseif ($totalIssues -gt 0) {
             $Host.UI.RawUI.ForegroundColor = "Yellow"
             "SQL Linting completed with {0} warnings. Review recommended but not blocking." -f $totalIssues | Out-Host
             $returnValue = $true
-        }
-        else {
+        } else {
             $Host.UI.RawUI.ForegroundColor = "Green"
             "SQL Linting completed successfully with no critical issues!" | Out-Host
             $returnValue = $true
@@ -360,18 +350,15 @@ try {
             "  - TSqlLint: dotnet tool install -g TSqlLint" | Out-Host
             "" | Out-Host
         }
-    }
-    else {
+    } else {
         $Host.UI.RawUI.ForegroundColor = "Yellow"
         "No SQL files found to lint" | Out-Host
         $returnValue = $true
     }
-}
-catch {
+} catch {
     $Host.UI.RawUI.ForegroundColor = "Red"
     Write-Error -Message ("Found errors during SQL linting: {0}" -f $_) -Category "InvalidOperation" -RecommendedAction "Review the captured error" -ErrorAction Stop
-}
-finally {
+} finally {
     $Host.UI.RawUI.ForegroundColor = $before
 }
 

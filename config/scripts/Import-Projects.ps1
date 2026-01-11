@@ -18,16 +18,21 @@ try {
     $host.ui.RawUI.ForegroundColor = "DarkGreen"
     "Adding .NET Projects to solution..." | Out-Host
 
-    if($ProjectsPath.Contains("Modules")) {
+    if ($ProjectsPath.Contains("Modules")) {
         [String] $rootPath = (Split-Path -Parent $ProjectsPath).ToString()
         $dotnetProjectDirectories = Get-ChildItem -Path $ProjectsPath -Directory | Where-Object -Property FullName -notmatch "Template|Imported"
 
         foreach ($directoryProject in $dotnetProjectDirectories) {
             if ($null -ne $directoryProject.FullName -and $directoryProject.FullName.Contains('Modules')) {
-                [String] $addProjectScriptToRun = ('{0} -Command sln -Arguments "{1} add {2}"' -f $FunctionsPath, $rootPath, $directoryProject.FullName)
+                # Ensure project is restored (and SDKs downloaded) before adding to solution
+                [String] $restoreProjectScriptToRun = ('{0} -Command restore -Arguments "`"{1}`""' -f $FunctionsPath, $directoryProject.FullName)
+                $scriptRestoreProjectBlock = [System.Management.Automation.ScriptBlock]::Create($restoreProjectScriptToRun)
+                Invoke-Command -ScriptBlock $scriptRestoreProjectBlock | Out-Null
+
+                [String] $addProjectScriptToRun = ('{0} -Command sln -Arguments "`"{1}`" add `"{2}`""' -f $FunctionsPath, $rootPath, $directoryProject.FullName)
                 $scriptAddProjectBlock = [System.Management.Automation.ScriptBlock]::Create($addProjectScriptToRun)
 
-                if(Invoke-Command -ScriptBlock $scriptAddProjectBlock) {
+                if (Invoke-Command -ScriptBlock $scriptAddProjectBlock) {
                     "Project {0} included successfully`n" -f $directoryProject.BaseName | Out-Host
                 }
             }
@@ -35,12 +40,10 @@ try {
 
         $returnValue = $true
     }
-}
-catch {
+} catch {
     $Host.UI.RawUI.ForegroundColor = "Red"
     Write-Error -Message ("Found errors adding projects to solution: {0}" -f $_) -Category "InvalidOperation" -RecommendedAction "Review the captured error" -ErrorAction Stop
-}
-finally {
+} finally {
     $Host.UI.RawUI.ForegroundColor = $before
 }
 
