@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!--codehouse-data-analytics-->
-<Project DefaultTargets="Build">
-	<Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
+<Project Sdk="Microsoft.Build.Sql/2.0.0" DefaultTargets="Build">
 	<ItemGroup>
 		<Folder Include="Tables" />
 		<None Include="Entrega.Final.publish.xml" />
@@ -13,7 +12,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{2396BFCF-910A-419F-B9FC-D04BF116B64C}</ProjectGuid>
+		<ProjectGuid>{B97EB60C-22BF-4E97-BB42-F7597A110A99}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
