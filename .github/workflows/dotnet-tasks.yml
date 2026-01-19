@@ -6,8 +6,11 @@ on:
     paths:
     - '**.cs'
     - '**.csproj'
+    - '**.xaml'
+    - '**.xaml.cs'
+    - '**.sln'
     - '.editorconfig'
-    - './github/workflows/dotnet-tasks.yml'
+    - './.github/workflows/dotnet-tasks.yml'
 
 jobs:
   set-git-environment:

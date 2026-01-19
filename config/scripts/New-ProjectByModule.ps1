@@ -60,13 +60,21 @@ try {
                 }
 
                 $dotnetConfigs = ($global.dotnet | Get-Member -MemberType NoteProperty).Name
-
+                $dotnetProjectGuids = @{}
+                $dotnetDependencies = @{}
                 if ($dotnetConfigs -contains "modules") {
-                    foreach ($mod in $global.dotnet.modules) {
+                    $modulesSource = $global.dotnet.modules
+                    $modNames = if ($modulesSource -is [System.Array]) { $modulesSource } else { $modulesSource.PSObject.Properties.Name }
+
+                    foreach ($mod in $modNames) {
                         if ($mod -notmatch "Template|Imported") {
                             $dotnetModules.Add($mod)
-
                             ".NET Module [{0}] found in {1} file" -f $mod, $globalFileName | Out-Host
+
+                            if ($modulesSource -isnot [System.Array]) {
+                                if ($modulesSource.$mod.guid) { $dotnetProjectGuids[$mod] = $modulesSource.$mod.guid }
+                                if ($modulesSource.$mod.dependencies) { $dotnetDependencies[$mod] = $modulesSource.$mod.dependencies }
+                            }
                         }
                     }
                 }
@@ -118,12 +126,30 @@ try {
                     [String] $sqlRunSqlCodeAnalysis = $global.sql.runSqlCodeAnalysis
                 }
 
+                $sqlProjectGuids = @{}
+                $sqlDependencies = @{}
                 if ($sqlConfigs -contains "modules") {
-                    foreach ($mod in $global.sql.modules) {
+                    $modulesSource = $global.sql.modules
+                    $modNames = if ($modulesSource -is [System.Array]) { $modulesSource } else { $modulesSource.PSObject.Properties.Name }
+
+                    foreach ($mod in $modNames) {
                         if ($mod -notmatch "Template|Imported") {
                             $sqlModules.Add($mod)
-
                             "SQL Server Module [{0}] found in {1} file" -f $mod, $globalFileName | Out-Host
+
+                            if ($modulesSource -isnot [System.Array]) {
+                                if ($modulesSource.$mod.guid) { $sqlProjectGuids[$mod] = $modulesSource.$mod.guid }
+                                if ($modulesSource.$mod.dependencies) { $sqlDependencies[$mod] = $modulesSource.$mod.dependencies }
+                            } else {
+                                # Fallback scanning for GUID if array (legacy/auto-detect)
+                                $sqlProjFile = Join-Path -Path $ModulesPath -ChildPath (Join-Path -Path $mod -ChildPath ("{0}.sqlproj" -f $mod))
+                                [String] $guid = [System.Guid]::NewGuid().ToString("B").ToUpper()
+                                if (Test-Path -Path $sqlProjFile) {
+                                    [Xml]$xml = Get-Content -Path $sqlProjFile -ErrorAction Stop
+                                    if ($xml.Project.PropertyGroup.ProjectGuid) { $guid = $xml.Project.PropertyGroup.ProjectGuid }
+                                }
+                                $sqlProjectGuids[$mod] = $guid
+                            }
                         }
                     }
                 }
@@ -271,6 +297,23 @@ try {
                         }
                     }
 
+                    if ($dotnetDependencies.ContainsKey($directoryProject.BaseName)) {
+                        foreach ($refMod in $dotnetDependencies[$directoryProject.BaseName]) {
+                            $refProjFile = Join-Path -Path ".." -ChildPath (Join-Path -Path $refMod -ChildPath ("{0}.csproj" -f $refMod))
+                            $refGuid = $dotnetProjectGuids[$refMod]
+
+                            $dotnetProjectFile.WriteStartElement('ProjectReference')
+                            $dotnetProjectFile.WriteAttributeString('Include', $refProjFile)
+                            if ($refGuid) {
+                                $dotnetProjectFile.WriteElementString('Project', $refGuid)
+                            }
+                            $dotnetProjectFile.WriteElementString('Name', $refMod)
+                            $dotnetProjectFile.WriteEndElement()
+
+                            ".NET added project reference [{0}] to project [{1}]" -f $refMod, $directoryProject.BaseName | Out-Host
+                        }
+                    }
+
                     $dotnetProjectFile.WriteEndElement()
                     $dotnetProjectFile.WriteStartElement('PropertyGroup')
                     $dotnetProjectFile.WriteElementString('PackageId', $directoryProject.BaseName)
@@ -297,7 +340,7 @@ try {
             if ($null -ne $sqlModules -and $sqlModules.Contains($directoryProject.BaseName)) {
                 [String] $sqlProjectBaseName = "{0}.sqlproj" -f $directoryProject.BaseName
                 [String] $sqlProjectFullName = Join-Path -Path $directoryProject.FullName -ChildPath $sqlProjectBaseName
-                [String] $sqlProjectGuid = [System.Guid]::NewGuid().ToString("B").ToUpper()
+                [String] $sqlProjectGuid = $sqlProjectGuids[$directoryProject.BaseName]
 
                 $sqlProjectFile = New-Object System.XMl.XmlTextWriter($sqlProjectFullName, $Null)
 
@@ -328,10 +371,31 @@ try {
                         }
                     }
 
+                    if ($sqlDependencies.ContainsKey($directoryProject.BaseName)) {
+                        foreach ($refMod in $sqlDependencies[$directoryProject.BaseName]) {
+                            $refProjFile = Join-Path -Path ".." -ChildPath (Join-Path -Path $refMod -ChildPath ("{0}.sqlproj" -f $refMod))
+                            $refGuid = $sqlProjectGuids[$refMod]
+
+                            $sqlProjectFile.WriteStartElement('ProjectReference')
+                            $sqlProjectFile.WriteAttributeString('Include', $refProjFile)
+                            $sqlProjectFile.WriteElementString('Name', $refMod)
+                            if ($refGuid) {
+                                $sqlProjectFile.WriteElementString('Project', $refGuid)
+                            }
+                            $sqlProjectFile.WriteElementString('Private', 'False')
+                            $sqlProjectFile.WriteElementString('SuppressMissingDependenciesErrors', 'False')
+                            $sqlProjectFile.WriteElementString('DatabaseVariableLiteralValue', $refMod)
+                            $sqlProjectFile.WriteEndElement()
+
+                            "SQL Server added project reference [{0}] to project [{1}]" -f $refMod, $directoryProject.BaseName | Out-Host
+                        }
+                    }
+
                     $sqlModuleDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -in @("Databases", "Tables", "Users", "Programmability", "Security", "Views") }
                     $sqlQueriesDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -like "Queries*" }
+                    $sqlReportsDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -like "Reports*" }
+                    $sqlScriptsDirectories = (Get-ChildItem -Path $directoryProject.FullName -Directory).BaseName | Where-Object { $_ -eq "scripts" }
                     $sqlPublishProfiles = (Get-ChildItem -Path $directoryProject.FullName -File).Name | Where-Object { $_ -like "*.publish.xml" }
-                    $sqlDacpacFiles = (Get-ChildItem -Path $directoryProject.FullName -File -Recurse).FullName | Where-Object { $_ -like "*.dacpac" }
 
                     foreach ($sqlDirectory in $sqlModuleDirectories) {
                         $sqlProjectFile.WriteStartElement('Folder')
@@ -341,7 +405,13 @@ try {
 
                     foreach ($sqlDirectory in $sqlQueriesDirectories) {
                         $sqlProjectFile.WriteStartElement('Build')
-                        $sqlProjectFile.WriteAttributeString('Remove', 'Queries\**\*.sql')
+                        $sqlProjectFile.WriteAttributeString('Remove', '{0}\**\*.sql' -f $sqlDirectory)
+                        $sqlProjectFile.WriteEndElement()
+                    }
+
+                    foreach ($sqlDirectory in $sqlReportsDirectories) {
+                        $sqlProjectFile.WriteStartElement('Build')
+                        $sqlProjectFile.WriteAttributeString('Remove', '{0}\**\*.sql' -f $sqlDirectory)
                         $sqlProjectFile.WriteEndElement()
                     }
 
@@ -351,6 +421,17 @@ try {
                         $sqlProjectFile.WriteEndElement()
                     }
 
+                    foreach ($sqlDirectory in $sqlScriptsDirectories) {
+                        $scriptsPath = Join-Path -Path $directoryProject.FullName -ChildPath $sqlDirectory
+                        $scriptFiles = Get-ChildItem -Path $scriptsPath -File | Where-Object { $_.Extension -eq ".sql" }
+                        foreach ($script in $scriptFiles) {
+                            $sqlProjectFile.WriteStartElement('PostDeploy')
+                            $sqlProjectFile.WriteAttributeString('Include', "$sqlDirectory\$($script.Name)")
+                            $sqlProjectFile.WriteEndElement()
+                        }
+                    }
+
+                    <#
                     foreach ($dacpacFile in $sqlDacpacFiles) {
                         # Convert absolute path to relative path for better portability
                         $relativeDacpacPath = Resolve-Path -Path $dacpacFile -Relative
@@ -359,6 +440,7 @@ try {
                         $sqlProjectFile.WriteAttributeString('Include', $relativeDacpacPath)
                         $sqlProjectFile.WriteEndElement()
                     }
+                    #>
 
                     $sqlProjectFile.WriteEndElement()
                     $sqlProjectFile.WriteStartElement('PropertyGroup')

@@ -36,20 +36,39 @@ try {
                 "Created artifact directory on {0}" -f $artifactsDirectory | Out-Host
             }
 
-            # Use relative path to avoid .NET CLI path duplication issues
-            $relativePath = "./artifacts"
+            # Use temporary relative path to separate build output from final artifacts
+            $tempRelativePath = "./bin/dacpac_temp"
 
             # Change to the project directory and run the build with relative path
             $originalLocation = Get-Location
             Set-Location -Path $projectModule.FullName
 
-            # Build the SQL project using dotnet build with relative artifacts output directory
-            $buildArguments = '"{0}" --configuration Release --output "{1}" --no-incremental' -f $sqlProjectFile.Name, $relativePath
+            # Build the SQL project using dotnet build with relative temporary output directory
+            $buildArguments = '"{0}" --configuration Release --output "{1}" --no-incremental' -f $sqlProjectFile.Name, $tempRelativePath
 
             try {
                 if (& $functionPath -Command "build" -Arguments $buildArguments -Privileged $false) {
-                    ("SQL Server DACPAC for module {0} has been built successfully`n" -f $projectModule.BaseName) | Out-Host
-                    $builtProjectsCount++
+                    $dacpacName = "{0}.dacpac" -f $sqlProjectFile.BaseName
+                    $sourceDacpac = Join-Path -Path $tempRelativePath -ChildPath $dacpacName
+
+                    if (Test-Path -Path $sourceDacpac) {
+                        # Move the correct DACPAC to the artifacts directory
+                        Copy-Item -Path $sourceDacpac -Destination $artifactsDirectory -Force
+
+                        # Clean up other unrelated DACPACs in the artifacts directory to prevent accumulation
+                        Get-ChildItem -Path $artifactsDirectory -Filter "*.dacpac" |
+                            Where-Object { $_.Name -ne $dacpacName } |
+                            Remove-Item -Force
+
+                        # Remove the temporary build directory
+                        Remove-Item -Path $tempRelativePath -Recurse -Force
+
+                        ("SQL Server DACPAC for module {0} has been built successfully`n" -f $projectModule.BaseName) | Out-Host
+                        $builtProjectsCount++
+                    }
+                    else {
+                        Write-Warning ("Build succeeded but expected DACPAC '{0}' was not found in '{1}'." -f $dacpacName, $tempRelativePath)
+                    }
                 }
             }
             catch {

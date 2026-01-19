@@ -9,6 +9,7 @@ Param (
 
 [Boolean] $returnValue = $false
 $before = $Host.UI.RawUI.ForegroundColor
+$ProgressPreference = 'SilentlyContinue'
 
 try {
     $Host.UI.RawUI.ForegroundColor = "DarkMagenta"
@@ -18,6 +19,7 @@ try {
     [String[]] $buildDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -in ("bin","obj")).FullName
     [String[]] $libDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "Libs").FullName
     [String[]] $artifactDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "artifacts").FullName
+    [String[]] $reportDirectories = (Get-ChildItem -Path $RootPath -Directory -Recurse | Where-Object -Property BaseName -eq "Reports").FullName
 
     if(Test-Path -Path $corePath -PathType Leaf) {
         Remove-Item -Path $corePath -Force -Confirm:$false -ErrorAction SilentlyContinue
@@ -49,6 +51,11 @@ try {
     if($null -ne $artifactDirectories) {
         $artifactDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
         "Artifact directories are clean now" | Out-Host
+    }
+
+    if($null -ne $reportDirectories) {
+        $reportDirectories | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+        "Report directories are clean now" | Out-Host
     }
 }
 catch {

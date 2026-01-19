@@ -70,12 +70,13 @@ try {
                     }
                 }
 
-                $serverInstance = $connectionParams['Server']
+                $serverInstance = if ($connectionParams['Server']) { $connectionParams['Server'] } else { $connectionParams['Data Source'] }
                 $userId = $connectionParams['User ID']
                 $password = $connectionParams['Password']
+                $integratedSecurity = $connectionParams['Integrated Security'] -eq 'True'
 
                 if ([string]::IsNullOrWhiteSpace($serverInstance)) {
-                    throw "Server instance not found in connection string"
+                    throw "Server instance or Data Source not found in connection string"
                 }
 
                 # Test connection with simple query
@@ -90,7 +91,10 @@ try {
                 }
 
                 # Add authentication parameters (avoid logging sensitive credentials)
-                if (-not [string]::IsNullOrWhiteSpace($userId) -and -not [string]::IsNullOrWhiteSpace($password)) {
+                if ($integratedSecurity) {
+                    # No explicit credentials needed for Integrated Security
+                }
+                elseif (-not [string]::IsNullOrWhiteSpace($userId) -and -not [string]::IsNullOrWhiteSpace($password)) {
                     # Note: Invoke-Sqlcmd requires plain text password, but we avoid logging it
                     $sqlParams['Username'] = $userId
                     $sqlParams['Password'] = $password

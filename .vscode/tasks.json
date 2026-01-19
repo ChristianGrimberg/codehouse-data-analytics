@@ -78,9 +78,9 @@
             }
         },
         {
-            "label": "Run SQL Server Projects Analysis, Build, Profile, Artifacts & Publish",
+            "label": "Run SQL Server Projects Analysis, Build, Profile, Publish DACPACs & BACPACs",
             "type": "shell",
-            "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish",
+            "command": ". ${workspaceFolder}/config/make.ps1 -Task Init, SqlAnalysis, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlProfile, SqlTools, SqlTest, SqlDacpac, SqlPublish, SqlBacpac",
             "group": {
                 "kind": "build"
             },
@@ -111,7 +111,7 @@
                         ]
                     }
                 },
-                "command": ".\\config\\make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish"
+                "command": ".\\config\\make.ps1 -Task Init, SqlAnalysis, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlProfile, SqlTools, SqlTest, SqlDacpac, SqlPublish, SqlBacpac"
             }
         }
     ]

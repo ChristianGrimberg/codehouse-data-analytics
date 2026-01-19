@@ -1,18 +1,30 @@
+# Definiciones de archivos binarios
 *.dll                           binary
-*.ps1                           text                            eol=crlf
-*.psm1                          text                            eol=crlf
-*.psd1                          text                            eol=crlf
-*.psc1                          text                            eol=crlf
-*.ps1xml                        text                            eol=crlf
-*.clixml                        text                            eol=crlf
-*.xml                           text                            eol=crlf
-*.txt                           text                            eol=crlf
-*.css                           text                            eol=crlf
-*.cs                            text                            eol=crlf
-*.md                            text                            eol=crlf
-Dockerfile                      text                            eol=crlf
-*.json                          text                            eol=crlf
-*.yml                           text                            eol=crlf
+
+# Archivos de PowerShell: Forzamos CRLF para compatibilidad con el entorno Windows
+*.ps1                           text eol=crlf
+*.psm1                          text eol=crlf
+*.psd1                          text eol=crlf
+*.psc1                          text eol=crlf
+*.ps1xml                        text eol=crlf
+*.clixml                        text eol=crlf
+
+# Archivos de Código y Texto: CRLF para desarrollo en Windows
+*.cs                            text eol=crlf
+*.txt                           text eol=crlf
+*.md                            text eol=crlf
+*.xml                           text eol=crlf
+*.css                           text eol=crlf
+
+# CRÍTICO: Archivos de Infraestructura y Linux (DEBEN SER LF)
+# Esto soluciona el error de "unexpected token \r" en WSL2
+*.sh                            text eol=lf 
+Dockerfile                      text eol=lf 
+*.yml                           text eol=lf 
+*.json                          text eol=lf 
+.env                            text eol=lf
+
+# Configuraciones de Git y Omitidos
 .gitignore                      export-ignore
 .gitattributes                  export-ignore
 .github/                        export-ignore
@@ -22,5 +34,7 @@ build/                          export-ignore
 config/                         export-ignore
 README.md                       export-ignore
 PSScriptAnalyzerSettings.psd1   export-ignore
-Modules/*                       linguist-vendored
+
+# Reconocimiento de lenguajes para GitHub/Linguist
+Modules/* linguist-vendored
 **/*.ps1                        linguist-language=powershell

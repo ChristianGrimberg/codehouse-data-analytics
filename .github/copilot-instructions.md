@@ -1,3 +1,7 @@
+---
+description: Copilot Instructions
+---
+
 # Copilot Instructions
 
 ## Repository Overview
@@ -33,40 +37,20 @@ This repository contains:
 
 **ALWAYS run these commands in sequence for any changes:**
 
-1. **Initialize Module Structure**: `./config/make.ps1 -Task Init`
-   - Creates module manifest if missing
-   - Required before any other operations
+1. **Initialize & Analyze PowerShell**: `./config/make.ps1 -Task Init, PowershellAnalysis, PowershellImport`
+   - Creates module manifest if missing.
+   - Runs PSScriptAnalyzer and tests module import.
+   - **MUST pass with zero errors/warnings**.
 
-2. **Code Analysis** (CRITICAL): `./config/make.ps1 -Task Analyze`  
-   - Uses PSScriptAnalyzer with settings from `PSScriptAnalyzerSettings.psd1` for PowerShell files
-   - **MUST pass with zero errors/warnings** - builds will fail otherwise
-   - Analyzes ALL .ps1 files recursively
-   - Analyzes .sql & .sqlproj files for best practices
+2. **Build .NET Projects**: `./config/make.ps1 -Task Init, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, DotnetPublish`
+   - Handles solution creation, project regeneration, restore, and build for .NET.
 
-3. **Build .NET Projects**: `./config/make.ps1 -Task Workload,Solution, Project, Format, Clean, Restore, Build`
-   - Workload: Ensures required .NET workloads are installed
-   - Solution: Creates/Updates .sln file
-   - Project: Regenerates .NET/SQL projects from templates
-   - Format: Applies dotnet format (whitespace & style)
-   - Clean: Cleans previous builds
-   - Restore: Restores NuGet packages (--no-cache)
-   - Build: Compiles to bin/Release
+3. **SQL Server Workflow**: `./config/make.ps1 -Task Init, SqlAnalysis, SqlLint, DotnetClean, DotnetSolution, ProjectByModule, DotnetRestore, DotnetBuild, SqlTest, SqlProfile, SqlDacpac, SqlBacpac, SqlPublish`
+   - Full cycle for SQL projects including analysis, linting, build, and publish.
 
-4. **Publish .NET/SQL Projects**: `./config/make.ps1 -Task Profile, Artifact, Publish, SqlPublish`
-   - Profile: Creates/Updates publish profiles
-   - Artifact: Creates build artifacts
-   - Publish: Publishes the project
-   - SqlPublish: Publishes SQL Server projects using profiles
+### Full Development Workflow
 
-5. **Import Modules**: `./config/make.ps1 -Task Import`
-   - Tests modules before import and dependency resolution
-   - May show warnings about missing modules (ExchangeOnlineManagement, Novocap.PowerShell.Logging.Management)
-
-### Full Development Workflow (F5 in VS Code)
-
-```powershell
-./config/make.ps1 -Task Init, Analyze, Workload, Format, Profile, Solution, Project, Restore, Build, Clean, Artifact, Publish, SqlPublish, Import
-```
+Refer to `.vscode/tasks.json` for the most up-to-date task sequences. The main groups are PowerShell Analysis, .NET Build/Publish, and SQL Server Build/Publish.
 
 ### Common Issues & Solutions
 
@@ -169,6 +153,13 @@ These are external dependencies that may not be available in development environ
 - **Path separators**: Use `/` in scripts (works on both platforms)  
 - **Module versioning**: Defined in global.json
 - **Error handling**: PSScriptAnalyzer enforces strict error handling patterns
+
+## Documentation & Versioning Rules
+
+### README.md Management
+- **Keep it Current**: Always update `README.md` when functional changes or new features are introduced. It must represent the *present* state of the project.
+- **No Changelogs**: Do **NOT** add change history, changelogs, or sprint records to `README.md`. 
+- **History via Releases**: Change history is maintained exclusively through **Git Tags** and **GitHub Releases** for each PR merged into `main`.
 
 ## Trust These Instructions
 

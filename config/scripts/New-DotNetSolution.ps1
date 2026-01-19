@@ -29,7 +29,7 @@ try {
             (".NET Solution {0} already exists" -f $solutionName) | Out-Host
         }
         else{
-            $scriptToSolution = ('{0} -Command new -Arguments "sln"' -f $FunctionsPath)
+            $scriptToSolution = ('{0} -Command new -Arguments "sln --force"' -f $FunctionsPath)
             $scriptToSolutionBlock = [System.Management.Automation.ScriptBlock]::Create($scriptToSolution)
 
             if(Invoke-Command -ScriptBlock $scriptToSolutionBlock) {

@@ -7,7 +7,7 @@ on:
     - '**.ps1'
     - '**.psm1'
     - '**.psd1'
-    - './github/workflows/pwsh-tasks.yml'
+    - './.github/workflows/pwsh-tasks.yml'
 
 jobs:
   set-git-environment:

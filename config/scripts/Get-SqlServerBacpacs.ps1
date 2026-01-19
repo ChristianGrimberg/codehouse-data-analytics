@@ -9,6 +9,7 @@ Param (
 
 [Boolean] $returnValue = $false
 $before = $Host.UI.RawUI.ForegroundColor
+$ProgressPreference = 'SilentlyContinue'
 
 try {
     $Host.UI.RawUI.ForegroundColor = "DarkGreen"
@@ -25,12 +26,8 @@ try {
 
         if ($null -ne $sqlProjectFile -and $null -ne $publishProfile) {
             $artifactsDirectory = Join-Path -Path $projectModule.FullName -ChildPath "artifacts"
-            $bacpacDirectory = Join-Path -Path $artifactsDirectory -ChildPath "bacpac"
-
-            if (-not (Test-Path -Path $bacpacDirectory)) {
-                New-Item -Path $bacpacDirectory -ItemType Directory -Force | Out-Null
-                "Created BACPAC directory: {0}" -f $bacpacDirectory | Out-Host
-            }
+            $artifactsDirectory = Join-Path -Path $projectModule.FullName -ChildPath "artifacts"
+            $bacpacDirectory = $artifactsDirectory
 
             # Parse publish profile to get connection string
             try {
@@ -44,6 +41,23 @@ try {
                     continue
                 }
 
+                # Ensure Initial Catalog or Database is in the connection string
+                if ($targetConnectionString -notlike "*Initial Catalog=*" -and $targetConnectionString -notlike "*Database=*") {
+                    if ($targetConnectionString -notmatch ";$") { $targetConnectionString += ";" }
+                    $targetConnectionString += "Initial Catalog=$targetDatabaseName"
+                }
+
+                # Workaround for SqlPackage quirk: on Windows with LocalDB, sometimes it prefers 'Data Source' over 'Server'
+                # and 'Initial Catalog' over 'Database' in the connection string for Export action.
+                if ($IsWindows -and $targetConnectionString -match "localdb") {
+                    if ($targetConnectionString -match "Server=") {
+                        $targetConnectionString = $targetConnectionString -replace "Server=", "Data Source="
+                    }
+                    if ($targetConnectionString -match "Database=") {
+                        $targetConnectionString = $targetConnectionString -replace "Database=", "Initial Catalog="
+                    }
+                }
+
                 $bacpacFileName = "{0}.bacpac" -f $targetDatabaseName
                 $bacpacFilePath = Join-Path -Path $bacpacDirectory -ChildPath $bacpacFileName
 
@@ -52,8 +66,8 @@ try {
                 # Check if SqlPackage is available
                 $sqlPackageCmd = $null
                 $sqlPackagePaths = @(
-                    "SqlPackage",
                     "sqlpackage",
+                    "SqlPackage",
                     "C:\Program Files\Microsoft SQL Server\160\DAC\bin\SqlPackage.exe",
                     "C:\Program Files\Microsoft SQL Server\150\DAC\bin\SqlPackage.exe",
                     "/opt/mssql-tools/bin/sqlpackage"
@@ -74,10 +88,7 @@ try {
 
                 if ($null -eq $sqlPackageCmd) {
                     $Host.UI.RawUI.ForegroundColor = "Yellow"
-                    "SqlPackage not found. BACPAC export requires SqlPackage.exe or sqlpackage CLI." | Out-Host
-                    "Install from: https://aka.ms/sqlpackage-linux or https://aka.ms/sqlpackage-windows" | Out-Host
-                    "Skipping BACPAC generation for {0}" -f $projectModule.BaseName | Out-Host
-                    "" | Out-Host
+                    "SqlPackage not found. BACPAC export requires SqlPackage.exe or sqlpackage CLI.`n" | Out-Host
                     continue
                 }
 
@@ -86,17 +97,20 @@ try {
                     "/Action:Export",
                     "/SourceConnectionString:`"$targetConnectionString`"",
                     "/TargetFile:`"$bacpacFilePath`"",
-                    "/p:VerifyExtraction=True",
-                    "/p:Storage=File"
+                    "/p:VerifyExtraction=False"
                 )
 
                 # Execute SqlPackage
                 $Host.UI.RawUI.ForegroundColor = "DarkGreen"
                 "Executing: {0} {1}" -f $sqlPackageCmd, ($sqlPackageArgs -join " ") | Out-Host
 
-                $sqlPackageProcess = Start-Process -FilePath $sqlPackageCmd -ArgumentList $sqlPackageArgs -Wait -NoNewWindow -PassThru
+                # Force .NET roll forward to support .NET 9 since SqlPackage targets .NET 8
+                $env:DOTNET_ROLL_FORWARD = "Major"
 
-                if ($sqlPackageProcess.ExitCode -eq 0) {
+                $sqlPackageProcess = Start-Process -FilePath $sqlPackageCmd -ArgumentList $sqlPackageArgs -Wait -NoNewWindow -PassThru
+                $exitCode = $sqlPackageProcess.ExitCode
+
+                if ($exitCode -eq 0) {
                     if (Test-Path -Path $bacpacFilePath) {
                         $bacpacSize = (Get-Item -Path $bacpacFilePath).Length / 1MB
                         ("BACPAC created successfully for {0}: {1:N2} MB`n" -f $targetDatabaseName, $bacpacSize) | Out-Host
@@ -109,7 +123,19 @@ try {
                 }
                 else {
                     $Host.UI.RawUI.ForegroundColor = "Yellow"
-                    "Warning: SqlPackage exited with code {0} for {1}" -f $sqlPackageProcess.ExitCode, $projectModule.BaseName | Out-Host
+                    "Warning: SqlPackage exited with code {0} for {1}" -f $exitCode, $projectModule.BaseName | Out-Host
+
+                    # Detect common "database not found" or "login failed" errors to provide better guidance
+                    # The error usually shows up in the stdout which we are already seeing in the console
+                    if ($exitCode -ne 0) {
+                         if ($targetConnectionString -match "localdb" -or $IsWindows) {
+                             "Tip: If the error is 'Cannot open database' or 'Login failed', ensure you have run the 'SqlPublish' task first to create and populate the database.`n" | Out-Host
+                         }
+                         if ($targetConnectionString -match "localhost,1433" -and $IsWindows) {
+                             $Host.UI.RawUI.ForegroundColor = "Red"
+                             "Warning: Using Linux connection string (localhost,1433) on Windows! Please run 'SqlProfile' task to refresh your profiles.`n" | Out-Host
+                         }
+                    }
                 }
             }
             catch {
@@ -135,11 +161,7 @@ try {
     }
     else {
         $Host.UI.RawUI.ForegroundColor = "Yellow"
-        "No BACPAC files created. This may be expected if:" | Out-Host
-        "  - SqlPackage is not installed" | Out-Host
-        "  - No publish profiles exist" | Out-Host
-        "  - Database connections are not available" | Out-Host
-        "" | Out-Host
+        "No BACPAC files created.`n" | Out-Host
         $returnValue = $true  # Not a critical failure
     }
 }

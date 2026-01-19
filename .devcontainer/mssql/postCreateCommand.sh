@@ -12,7 +12,8 @@ echo "Using SA password: $SApassword"
 echo "SELECT * FROM SYS.DATABASES" | dd of=testsqlconnection.sql
 for i in {1..60};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i testsqlconnection.sql > /dev/null
+    # Agregamos -C para confiar en el certificado del servidor
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -C -d master -i testsqlconnection.sql > /dev/null
     if [ $? -eq 0 ]
     then
         echo "SQL server ready"
@@ -49,7 +50,8 @@ then
         if [ $f == $sqlpath/*".sql" ]
         then
             echo "Executing $f"
-            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i $f
+            # Agregamos -C para la ejecución de los scripts SQL (como setup.sql)
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -C -d master -i $f
         fi
     done
 fi
@@ -62,6 +64,7 @@ then
         then
             dbname=$(basename $f ".dacpac")
             echo "Deploying dacpac $f"
+            # sqlpackage ya tenía el parámetro /TargetTrustServerCertificate:True
             /opt/sqlpackage/sqlpackage /Action:Publish /SourceFile:$f /TargetTrustServerCertificate:True /TargetServerName:db /TargetDatabaseName:$dbname /TargetUser:sa /TargetPassword:$SApassword
         fi
     done

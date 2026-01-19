@@ -80,15 +80,6 @@ if (Invoke-Command -ScriptBlock $scriptSystemBlock) {
                 ("{0} SQL Server code analysis completed successfully`n" -f [Char]8730) | Out-Host
             }
         }
-        SqlLint {
-            [String] $sqlLintScriptPath = Join-Path -Path $scriptsPath -ChildPath "New-SqlServerLint.ps1"
-            [String] $sqlLintScriptToRun = "{0} -ModulesPath {1}" -f $sqlLintScriptPath, $modulesPath
-            $sqlScriptLintBlock = [System.Management.Automation.ScriptBlock]::Create($sqlLintScriptToRun)
-
-            if (Invoke-Command -ScriptBlock $sqlScriptLintBlock) {
-                ("{0} SQL Server linting completed successfully`n" -f [Char]8730) | Out-Host
-            }
-        }
         DotnetSolution {
             [String] $createSolutionScriptPath = Join-Path -Path $scriptsPath -ChildPath "New-DotNetSolution.ps1"
             [String] $createSolutionScriptToRun = "{0} -RootPath {1} -FunctionsPath {2}" -f $createSolutionScriptPath, $rootPath, $invokeDotNetCoreScriptPath
@@ -203,12 +194,21 @@ if (Invoke-Command -ScriptBlock $scriptSystemBlock) {
             # Set environment variable for development container
             $env:SQL_PASSWORD = "P@ssw0rd"
 
-            if (& $sqlProfileScriptPath -ModulesPath $modulesPath -ServerInstance localhost -Port 1433 -User sa) {
+            if (& $sqlProfileScriptPath -ModulesPath $modulesPath -GlobalPath $globalPath) {
                 ("{0} SQL Server publish profiles created successfully`n" -f [Char]8730) | Out-Host
             }
 
             # Clear environment variable after use
             $env:SQL_PASSWORD = $null
+        }
+        SqlTools {
+            [String] $sqlToolsScriptPath = Join-Path -Path $scriptsPath -ChildPath "Get-SqlServerTools.ps1"
+            [String] $sqlToolsScriptToRun = "& `"{0}`" -GlobalPath `"{1}`"" -f $sqlToolsScriptPath, $globalPath
+            $scriptSqlToolsBlock = [System.Management.Automation.ScriptBlock]::Create($sqlToolsScriptToRun)
+
+            if (Invoke-Command -ScriptBlock $scriptSqlToolsBlock) {
+                ("{0} SQL Server tools have been installed successfully`n" -f [Char]8730) | Out-Host
+            }
         }
         SqlTest {
             [String] $testSqlConnectionScriptPath = Join-Path -Path $scriptsPath -ChildPath "Test-SqlServerConnection.ps1"
@@ -229,8 +229,8 @@ if (Invoke-Command -ScriptBlock $scriptSystemBlock) {
             }
         }
         SqlPublish {
-            [String] $sqlPublishScriptPath = Join-Path -Path $scriptsPath -ChildPath "Publish-SqlServerArtifacts.ps1"
-            [String] $sqlPublishScriptToRun = "{0} -ModulesPath {1}" -f $sqlPublishScriptPath, $modulesPath
+            [String] $sqlPublishScriptPath = Join-Path -Path $scriptsPath -ChildPath "Publish-SqlServerDacpacs.ps1"
+            [String] $sqlPublishScriptToRun = "{0} -ModulesPath {1} -GlobalPath {2}" -f $sqlPublishScriptPath, $modulesPath, $globalPath
             $scriptSqlPublishBlock = [System.Management.Automation.ScriptBlock]::Create($sqlPublishScriptToRun)
 
             if (Invoke-Command -ScriptBlock $scriptSqlPublishBlock) {
@@ -238,7 +238,7 @@ if (Invoke-Command -ScriptBlock $scriptSystemBlock) {
             }
         }
         SqlBacpac {
-            [String] $sqlBacpacScriptPath = Join-Path -Path $scriptsPath -ChildPath "New-SqlServerBacpac.ps1"
+            [String] $sqlBacpacScriptPath = Join-Path -Path $scriptsPath -ChildPath "Get-SqlServerBacpacs.ps1"
             [String] $sqlBacpacScriptToRun = "{0} -ModulesPath {1}" -f $sqlBacpacScriptPath, $modulesPath
             $scriptSqlBacpacBlock = [System.Management.Automation.ScriptBlock]::Create($sqlBacpacScriptToRun)
 

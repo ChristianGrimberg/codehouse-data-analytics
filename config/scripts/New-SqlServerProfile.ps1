@@ -8,26 +8,33 @@ Param (
     [String]
     [ValidateNotNullOrEmpty()]
     [Parameter(Mandatory)]
+    $GlobalPath,
+    [String]
     $ServerInstance = "localhost",
     [String]
-    [ValidateNotNullOrEmpty()]
-    [Parameter(Mandatory)]
     $Port = "1433",
     [String]
-    [ValidateNotNullOrEmpty()]
-    [Parameter(Mandatory)]
     $User = "sa"
 )
 
 [Boolean] $returnValue = $false
 $before = $Host.UI.RawUI.ForegroundColor
 
-# Get password from environment variable or use development default
-$plainPassword = if ($env:SQL_PASSWORD) { $env:SQL_PASSWORD } else { "P@ssw0rd" }
-
 try {
     $Host.UI.RawUI.ForegroundColor = "DarkBlue"
-    "Creating SQL Server publish profiles..." | Out-Host
+    "Creating SQL Server publish profiles for $ServerInstance and port $Port and user $User..." | Out-Host
+
+    if (-not (Test-Path -Path $GlobalPath)) {
+        throw "global.json not found at: $GlobalPath"
+    }
+
+    $globalJson = Get-Content -Path $GlobalPath -Raw | ConvertFrom-Json
+    $osKey = if ($IsWindows) { "windows" } else { "linux" }
+    $connectionStringTemplate = $globalJson.sql.connectionStrings.$osKey
+
+    if ([string]::IsNullOrWhiteSpace($connectionStringTemplate)) {
+        throw "No connection string template found for OS: $osKey in global.json"
+    }
 
     $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
     [Int] $createdProfilesCount = 0
@@ -40,11 +47,11 @@ try {
             $publishProfileName = "{0}.publish.xml" -f $projectModule.BaseName
             $publishProfilePath = Join-Path -Path $projectModule.FullName -ChildPath $publishProfileName
 
-            # Extract database name from project name (remove .Database suffix if present)
-            $databaseName = $projectModule.BaseName -replace '\.Database$', ''
+            # Use the full module name as the database name
+            $databaseName = $projectModule.BaseName
 
-            # Create connection string
-            $connectionString = "Server={0},{1};Database={2};User ID={3};Password={4};Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql-GeneralConnection;Application Intent=ReadWrite;Command Timeout=30" -f $ServerInstance, $Port, $databaseName.ToLower(), $User, $plainPassword
+            # Create connection string from template
+            $connectionString = $connectionStringTemplate -f $databaseName.ToLower()
 
             "Creating publish profile for: {0} -> Database: {1}" -f $projectModule.BaseName, $databaseName.ToLower() | Out-Host
 
@@ -53,7 +60,7 @@ try {
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <IncludeCompositeObjects>False</IncludeCompositeObjects>
     <TargetDatabaseName>$($databaseName.ToLower())</TargetDatabaseName>
     <DeployScriptFileName>$($projectModule.BaseName).sql</DeployScriptFileName>
     <TargetConnectionString>$connectionString</TargetConnectionString>
@@ -137,7 +144,8 @@ try {
 
     if ($createdProfilesCount -gt 0) {
         $Host.UI.RawUI.ForegroundColor = "DarkBlue"
-        ("Successfully created {0} SQL Server publish profiles for {1}:{2}`n" -f $createdProfilesCount, $ServerInstance, $Port) | Out-Host
+        $displayServer = if ($connectionStringTemplate -match 'Server=([^;]+)') { $matches[1] } elseif ($connectionStringTemplate -match 'Data Source=([^;]+)') { $matches[1] } else { "Local" }
+        ("Successfully created {0} SQL Server publish profiles for {1}`n" -f $createdProfilesCount, $displayServer) | Out-Host
         $returnValue = $true
     }
     else {

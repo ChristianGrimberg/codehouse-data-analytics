@@ -57,5 +57,6 @@
     "csharp.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
     "csharp.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
     "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
-    "workbench.editorLargeFileConfirmation": 20
+    "workbench.editorLargeFileConfirmation": 20,
+    "editor.formatOnSave": false
 }

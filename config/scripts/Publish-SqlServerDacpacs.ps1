@@ -4,7 +4,11 @@ Param (
     [String]
     [ValidateNotNullOrEmpty()]
     [Parameter(Mandatory)]
-    $ModulesPath
+    $ModulesPath,
+    [String]
+    [ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory)]
+    $GlobalPath
 )
 
 [Boolean] $returnValue = $false
@@ -14,8 +18,23 @@ try {
     # SqlPackage path (should be pre-installed in the development container)
     $sqlPackagePath = "sqlpackage"
 
+    # Force .NET roll forward to support .NET 9 since SqlPackage targets .NET 8
+    $env:DOTNET_ROLL_FORWARD = "Major"
+
     $Host.UI.RawUI.ForegroundColor = "Magenta"
     "Executing SQL Server publish profiles..." | Out-Host
+
+    if (-not (Test-Path -Path $GlobalPath)) {
+        throw "global.json not found at: $GlobalPath"
+    }
+
+    $globalJson = Get-Content -Path $GlobalPath -Raw | ConvertFrom-Json
+    $osKey = if ($IsWindows) { "windows" } else { "linux" }
+    $connectionStringTemplate = $globalJson.sql.connectionStrings.$osKey
+
+    if ([string]::IsNullOrWhiteSpace($connectionStringTemplate)) {
+        throw "No connection string template found for OS: $osKey in global.json"
+    }
 
     $sqlProjectDirectories = Get-ChildItem -Path $ModulesPath -Directory | Where-Object { $_.FullName -notmatch "Template|Imported" }
 
@@ -29,6 +48,8 @@ try {
         if ($null -ne $sqlProjectFile -and $null -ne $publishProfileFile) {
             "Executing publish profile for: {0}" -f $projectModule.BaseName | Out-Host
 
+            try {
+
             # Validate that the publish profile exists and is not empty
             if (-not (Test-Path -Path $publishProfileFile.FullName) -or (Get-Item $publishProfileFile.FullName).Length -eq 0) {
                 $Host.UI.RawUI.ForegroundColor = "Yellow"
@@ -36,13 +57,16 @@ try {
                 continue
             }
 
-            # Look for the generated DACPAC file in the artifacts directory
+            # Looking for the generated DACPAC file in the artifacts directory
             $artifactsDirectory = Join-Path -Path $projectModule.FullName -ChildPath "artifacts"
-            $dacpacFile = Get-ChildItem -Path $artifactsDirectory -Filter "*.dacpac" -ErrorAction SilentlyContinue | Select-Object -First 1
+            # Explicitly look for the DACPAC matching the project name to avoid picking up dependency DACPACs
+            # Use the project filename as source of truth for the DACPAC name, as dotnet build uses this
+            $dacpacName = "{0}.dacpac" -f $sqlProjectFile.BaseName
+            $dacpacFile = Get-ChildItem -Path $artifactsDirectory -Filter $dacpacName -ErrorAction SilentlyContinue | Select-Object -First 1
 
             if ($null -eq $dacpacFile) {
                 $Host.UI.RawUI.ForegroundColor = "Yellow"
-                ("No DACPAC file found for {0}. Run Artifact task first.`n" -f $projectModule.BaseName) | Out-Host
+                ("No DACPAC file found for {0} (Expected: {1}). Run Artifact task first.`n" -f $projectModule.BaseName, $dacpacName) | Out-Host
                 continue
             }
 
@@ -56,80 +80,68 @@ try {
             $deployReportPath = Join-Path -Path $reportsDirectory -ChildPath ("{0}_DeployReport.xml" -f $projectModule.BaseName)
             $deployScriptPath = Join-Path -Path $reportsDirectory -ChildPath ("{0}_DeployScript.sql" -f $projectModule.BaseName)
 
-            try {
                 "Deploying DACPAC: {0}" -f $dacpacFile.Name | Out-Host
                 "Target Database: {0}" -f $projectModule.BaseName | Out-Host
 
-                # First, test the connection to SQL Server
-                "Testing connection to SQL Server..." | Out-Host
+                $targetConnectionString = $connectionStringTemplate -f $projectModule.BaseName
+                $deployCommand = @(
+                    $sqlPackagePath
+                    "/Action:Publish"
+                    "/SourceFile:$($dacpacFile.FullName)"
+                    "/TargetConnectionString:$targetConnectionString"
+                    "/DeployReportPath:$deployReportPath"
+                    "/DeployScriptPath:$deployScriptPath"
+                    "/p:CreateNewDatabase=True"
+                    "/p:BlockOnPossibleDataLoss=False"
+                )
+
+                $tempCopiedDacpacs = @()
 
                 try {
-                    # Test SQL Server connection using direct command execution
-                    $sqlcmdArgs = @('-S', 'localhost,1433', '-U', 'sa', '-P', 'P@ssw0rd', '-Q', 'SELECT @@VERSION', '-l', '30')
-                    $null = & sqlcmd $sqlcmdArgs
-                    if ($LASTEXITCODE -eq 0) {
-                        "✓ Connection to SQL Server successful" | Out-Host
+                    # Stage dependencies: Copy other DACPACs to the artifacts directory temporarily
+                    # This ensures SqlPackage can resolve references without permanently accumulating files
+                    foreach ($moduleDir in $sqlProjectDirectories) {
+                         if ($moduleDir.FullName -eq $projectModule.FullName) { continue }
 
-                        # Now deploy using sqlpackage directly
-                        $deployCommand = @(
-                            $sqlPackagePath
-                            "/Action:Publish"
-                            "/SourceFile:$($dacpacFile.FullName)"
-                            "/TargetConnectionString:Server=localhost,1433;Database=$($projectModule.BaseName);User Id=sa;Password=P@ssw0rd;TrustServerCertificate=True;Encrypt=false"
-                            "/DeployReportPath:$deployReportPath"
-                            "/DeployScriptPath:$deployScriptPath"
-                            "/p:CreateNewDatabase=True"
-                            "/p:BlockOnPossibleDataLoss=False"
-                        )
-
-                        "Executing SqlPackage deployment..." | Out-Host
-                        $null = & $deployCommand[0] $deployCommand[1..($deployCommand.Length-1)]
-
-                        if ($LASTEXITCODE -eq 0) {
-                            $Host.UI.RawUI.ForegroundColor = "Green"
-                            ("SQL database deployment for {0} completed successfully`n" -f $projectModule.BaseName) | Out-Host
-                            ("Deploy report generated: {0}" -f $deployReportPath) | Out-Host
-                            ("Deploy script generated: {0}" -f $deployScriptPath) | Out-Host
-                            $executedProfilesCount++
-                        }
-                        else {
-                            $Host.UI.RawUI.ForegroundColor = "Red"
-                            ("Failed to deploy SQL database for: {0}`n" -f $projectModule.BaseName) | Out-Host
-                            ("SqlPackage exit code: {0}" -f $LASTEXITCODE) | Out-Host
-                        }
+                         $moduleArtifacts = Join-Path -Path $moduleDir.FullName -ChildPath "artifacts"
+                         if (Test-Path -Path $moduleArtifacts) {
+                             $foundDacpacs = Get-ChildItem -Path $moduleArtifacts -Filter "*.dacpac"
+                             foreach ($dep in $foundDacpacs) {
+                                 $dest = Join-Path -Path $artifactsDirectory -ChildPath $dep.Name
+                                 # Only copy if it doesn't exist to avoid overwriting the main artifact (unlikely due to check)
+                                 if (-not (Test-Path -Path $dest)) {
+                                     Copy-Item -Path $dep.FullName -Destination $dest -Force
+                                     $tempCopiedDacpacs += $dest
+                                 }
+                             }
+                         }
                     }
-                    else {
-                        $Host.UI.RawUI.ForegroundColor = "Red"
-                        ("Cannot connect to SQL Server at localhost:1433. Please ensure SQL Server is running.`n") | Out-Host
-                    }
-                }
-                catch {
-                    $Host.UI.RawUI.ForegroundColor = "Yellow"
-                    ("Warning: Cannot test SQL Server connection with sqlcmd. Proceeding with SqlPackage...`n") | Out-Host
 
-                    # Fallback to direct SqlPackage execution without connection test
-                    $deployCommand = @(
-                        $sqlPackagePath
-                        "/Action:Publish"
-                        "/SourceFile:$($dacpacFile.FullName)"
-                        "/TargetConnectionString:Server=localhost,1433;Database=$($projectModule.BaseName);User Id=sa;Password=P@ssw0rd;TrustServerCertificate=True;Encrypt=false"
-                        "/DeployReportPath:$deployReportPath"
-                        "/DeployScriptPath:$deployScriptPath"
-                        "/p:CreateNewDatabase=True"
-                        "/p:BlockOnPossibleDataLoss=False"
-                    )
-
+                    "Executing SqlPackage deployment..." | Out-Host
                     $null = & $deployCommand[0] $deployCommand[1..($deployCommand.Length-1)]
 
                     if ($LASTEXITCODE -eq 0) {
                         $Host.UI.RawUI.ForegroundColor = "Green"
                         ("SQL database deployment for {0} completed successfully`n" -f $projectModule.BaseName) | Out-Host
+                        ("Deploy report generated: {0}" -f $deployReportPath) | Out-Host
+                        ("Deploy script generated: {0}" -f $deployScriptPath) | Out-Host
                         $executedProfilesCount++
                     }
                     else {
                         $Host.UI.RawUI.ForegroundColor = "Red"
                         ("Failed to deploy SQL database for: {0}`n" -f $projectModule.BaseName) | Out-Host
                         ("SqlPackage exit code: {0}" -f $LASTEXITCODE) | Out-Host
+                    }
+                }
+                finally {
+                    $ProgressPreference = 'SilentlyContinue'
+                    # Cleanup staged dependencies
+                    # ENFORCE: Only the project's own DACPAC should remain.
+                    # This removes any dependency DACPACs copied (tracked or untracked from previous runs)
+                    if (Test-Path -Path $artifactsDirectory) {
+                        Get-ChildItem -Path $artifactsDirectory -Filter "*.dacpac" |
+                            Where-Object { $_.Name -ne $dacpacName } |
+                            Remove-Item -Force -ErrorAction SilentlyContinue
                     }
                 }
             }

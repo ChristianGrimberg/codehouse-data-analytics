@@ -53,3 +53,9 @@ system32.psd1
 **/Reports/**
 *.dacpac
 *.bacpac
+
+# ===================
+# Build Logs
+# ===================
+build_*.log
+build_*.txt
