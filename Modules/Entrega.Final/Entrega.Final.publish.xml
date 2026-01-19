@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <IncludeCompositeObjects>False</IncludeCompositeObjects>
     <TargetDatabaseName>entrega.final</TargetDatabaseName>
     <DeployScriptFileName>Entrega.Final.sql</DeployScriptFileName>
-    <TargetConnectionString>Server=localhost,1433;Database=entrega.final;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql-GeneralConnection;Application Intent=ReadWrite;Command Timeout=30</TargetConnectionString>
+    <TargetConnectionString>Server=localhost,1433;Database=Nike_Sabado;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;</TargetConnectionString>
     <ProfileVersionNumber>1</ProfileVersionNumber>
     <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
     <BackupDatabaseBeforeChanges>True</BackupDatabaseBeforeChanges>

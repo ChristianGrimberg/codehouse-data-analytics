@@ -11,7 +11,7 @@
 		<Version>0.0.0.1</Version>
 		<Authors>https://github.com/ChristianGrimberg</Authors>
 		<Company>Coderhouse Data Analytics</Company>
-		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
 		<ProjectGuid>{34E74D04-9246-4708-BE86-C013A177996C}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
