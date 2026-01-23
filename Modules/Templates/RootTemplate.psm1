@@ -36,13 +36,24 @@ $moduleToImportPath = New-Object -TypeName "System.Collections.Generic.List[Stri
 [String] $generalModuleManifiestPath = Join-Path -Path $PSScriptRoot -ChildPath $generalModuleManifiest
 [String] $generalRootModule = ("./{0}.psm1" -f $rootName)
 [String] $globalPath = Join-Path -Path $PSScriptRoot -ChildPath "global.json"
-[String] $powershellModule = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).powershell.module
-[String] $powershellGUID = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).powershell.guid
-[String] $powershellVersion = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).powershell.version
-[String] $copyright = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).organization.copyright
-[String] $organization = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).organization.name
-[String] $team = (Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json).organization.team
+$global = Get-Content -Path $globalPath -Raw -Encoding Ascii | ConvertFrom-Json
+[String] $powershellModule = $global.powershell.module
+[String] $powershellGUID = $global.powershell.guid
+[String] $powershellVersion = $global.powershell.version
+[String] $copyright = $global.organization.copyright
+[String] $organization = $global.organization.name
+[String] $team = $global.organization.team
 $publicFunctionsToRootManifiest = New-Object -TypeName "System.Collections.Generic.List[String]"
+$powershellModuleGuids = @{}
+# Lee GUIDs fijos desde global.json para cada módulo PowerShell
+if ($global.powershell.modules) {
+    $moduleNames = $global.powershell.modules | Get-Member -MemberType NoteProperty
+    foreach ($mod in $moduleNames) {
+        if ($global.powershell.modules.($mod.Name).guid) {
+            $powershellModuleGuids[$mod.Name] = $global.powershell.modules.($mod.Name).guid
+        }
+    }
+}
 #endregion
 
 #region Importa elementos de todos los modulos y recrea plantillas
@@ -65,19 +76,33 @@ foreach ($folderModule in $modulesToImport) {
     # Crea archivo .psm1 usando contenido de la plantilla estandar
     New-Item -Path $folderModule.FullName -Name $itemModuleName -ItemType File -Value $moduleTemplate -Force
     
+    # Obtiene GUID fijo desde global.json si existe
+    $moduleGuid = $null
+    if ($powershellModuleGuids.ContainsKey($folderModule.BaseName)) {
+        $moduleGuid = $powershellModuleGuids[$folderModule.BaseName]
+    }
+    
     # Genera manifiesto de modulo con metadata y funciones exportadas
-    New-ModuleManifest `
-        -Path $itemManifiestPath `
-        -RootModule $itemModulePath `
-        -CompanyName $organization `
-        -Copyright $copyright `
-        -Author $team `
-        -ModuleVersion $powershellModule `
-        -CompatiblePSEditions @("Desktop","Core") `
-        -FunctionsToExport $publicFunctionsToExport `
-        -Description ("Import " + $itemModuleName) `
-        -PowerShellVersion $powershellVersion `
-        -PassThru
+    # Si no hay GUID definido, New-ModuleManifest generará uno automáticamente
+    $manifestParams = @{
+        Path = $itemManifiestPath
+        RootModule = $itemModulePath
+        CompanyName = $organization
+        Copyright = $copyright
+        Author = $team
+        ModuleVersion = $powershellModule
+        CompatiblePSEditions = @("Desktop","Core")
+        FunctionsToExport = $publicFunctionsToExport
+        Description = ("Import " + $itemModuleName)
+        PowerShellVersion = $powershellVersion
+        PassThru = $true
+    }
+    
+    if ($null -ne $moduleGuid) {
+        $manifestParams['GUID'] = $moduleGuid
+    }
+    
+    New-ModuleManifest @manifestParams
 
     # Registra ruta completa del modulo para importacion posterior
     $moduleToImportPath += (Get-ChildItem -Path $folderModule.FullName -File -Filter "*.psm1" -ErrorAction SilentlyContinue).FullName

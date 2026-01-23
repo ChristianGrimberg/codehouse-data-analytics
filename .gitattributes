@@ -1,22 +1,22 @@
 # Definiciones de archivos binarios
 *.dll                           binary
 
-# Archivos de PowerShell: Forzamos CRLF para compatibilidad con el entorno Windows
-*.ps1                           text eol=crlf
-*.psm1                          text eol=crlf
-*.psd1                          text eol=crlf
-*.psc1                          text eol=crlf
-*.ps1xml                        text eol=crlf
-*.clixml                        text eol=crlf
+# Archivos de PowerShell: Forzamos LF para compatibilidad multiplataforma (Windows, MacOS, Linux, Contenedores)
+*.ps1                           text eol=lf
+*.psm1                          text eol=lf
+*.psd1                          text eol=lf
+*.psc1                          text eol=lf
+*.ps1xml                        text eol=lf
+*.clixml                        text eol=lf
 
-# Archivos de Código y Texto: CRLF para desarrollo en Windows
-*.cs                            text eol=crlf
-*.txt                           text eol=crlf
-*.md                            text eol=crlf
-*.xml                           text eol=crlf
-*.css                           text eol=crlf
+# Archivos de Código y Texto: LF para compatibilidad multiplataforma
+*.cs                            text eol=lf
+*.txt                           text eol=lf
+*.md                            text eol=lf
+*.xml                           text eol=lf
+*.css                           text eol=lf
 
-# CRÍTICO: Archivos de Infraestructura y Linux (DEBEN SER LF)
+# CRITICO: Archivos de Infraestructura y Linux (DEBEN SER LF)
 # Esto soluciona el error de "unexpected token \r" en WSL2
 *.sh                            text eol=lf 
 Dockerfile                      text eol=lf 

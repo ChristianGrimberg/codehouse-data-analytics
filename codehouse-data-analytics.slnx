@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Modules/">
+    <Project Path="Modules/03.Entrega/03.Entrega.sqlproj" />
+    <Project Path="Modules/Entrega.Final/Entrega.Final.sqlproj" />
+    <Project Path="Modules/Nike.Database/Nike.Database.sqlproj" />
+  </Folder>
+</Solution>
