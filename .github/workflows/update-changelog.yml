@@ -1,0 +1,79 @@
+name: Update Changelog automatically
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-changelog:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Generate Changelog
+        run: |
+          CHANGELOG_CONTENT="# Changelog\n\n"
+          CHANGELOG_CONTENT+="Todos los cambios notables a este proyecto seran documentados en este archivo.\n\n"
+          CHANGELOG_CONTENT+="El formato esta basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).\n\n"
+          
+          # Get release tag
+          TAG_NAME="${{ github.ref_name }}"
+          CHANGELOG_CONTENT+="## [$TAG_NAME] - $(date +%Y-%m-%d)\n\n"
+          
+          # Ensure we have all tags and main history
+          git fetch --tags origin
+          git fetch origin main:main
+          
+          # Determine previous tag (if any)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 "${TAG_NAME}^" 2>/dev/null || echo "")
+          
+          if [ -n "$PREVIOUS_TAG" ]; then
+            RANGE="$PREVIOUS_TAG..$TAG_NAME"
+          else
+            RANGE="$TAG_NAME"
+          fi
+          
+          # Build sections from commit messages using Conventional Commits prefixes
+          ADDED_CHANGES=$(git log --pretty=format:'%s' "$RANGE" | awk '/^feat:/ {sub(/^feat:[[:space:]]*/, ""); print "- " $0}')
+          CHANGED_CHANGES=$(git log --pretty=format:'%s' "$RANGE" | awk '/^(refactor:|perf:)/ {sub(/^[^:]+:[[:space:]]*/, ""); print "- " $0}')
+          FIXED_CHANGES=$(git log --pretty=format:'%s' "$RANGE" | awk '/^fix:/ {sub(/^fix:[[:space:]]*/, ""); print "- " $0}')
+          REMOVED_CHANGES=$(git log --pretty=format:'%s' "$RANGE" | awk '/^revert:/ {sub(/^revert:[[:space:]]*/, ""); print "- " $0}')
+          
+          if [ -n "$ADDED_CHANGES" ]; then
+            CHANGELOG_CONTENT+="### Added\n"
+            CHANGELOG_CONTENT+="$ADDED_CHANGES\n\n"
+          fi
+          
+          if [ -n "$CHANGED_CHANGES" ]; then
+            CHANGELOG_CONTENT+="### Changed\n"
+            CHANGELOG_CONTENT+="$CHANGED_CHANGES\n\n"
+          fi
+          
+          if [ -n "$FIXED_CHANGES" ]; then
+            CHANGELOG_CONTENT+="### Fixed\n"
+            CHANGELOG_CONTENT+="$FIXED_CHANGES\n\n"
+          fi
+          
+          if [ -n "$REMOVED_CHANGES" ]; then
+            CHANGELOG_CONTENT+="### Removed\n"
+            CHANGELOG_CONTENT+="$REMOVED_CHANGES\n\n"
+          fi
+          
+          echo "$CHANGELOG_CONTENT" > CHANGELOG.md
+      
+      - name: Commit Changelog
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add CHANGELOG.md
+          git commit -m "docs: Update CHANGELOG for release ${{ github.ref_name }}"
+          git push

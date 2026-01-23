@@ -1,0 +1,44 @@
+name: Welcome to New Contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Greet new contributors
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { issue, pull_request } = context.payload;
+            const isPR = !!pull_request;
+            const number = isPR ? pull_request.number : issue.number;
+            const actor = isPR ? pull_request.user.login : issue.user.login;
+            
+            const welcomeMessage = `
+            👋 ¡Hola @${actor}! Gracias por tu interés en contribuir en el repositorio. Para asegurar una integración fluida y mantener la calidad del proyecto, por favor ten en cuenta los siguientes pilares fundamentales:
+
+            ### 🚩 Reglas de Oro
+
+            1. **Spanish Only**: Toda comunicación, comentarios y documentación deben estar estrictamente en español.
+            2. **Security First**: No se aceptarán cambios con advertencias de \`PSScriptAnalyzer\`, \`.NET Analyzers\` o \`TSqlLint\`.
+            3. **Centralized Docs**: Cualquier cambio funcional debe verse reflejado inmediatamente en el \`README.md\`.
+
+            Para detalles específicos, consulta nuestra [Guía de Contribución](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/.github/CONTRIBUTING.md).
+
+            ¡Estamos ansiosos por ver tus aportes! 🚀
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: number,
+              body: welcomeMessage,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });

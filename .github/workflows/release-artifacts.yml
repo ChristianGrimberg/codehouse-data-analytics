@@ -1,0 +1,76 @@
+name: Release Build and Attach Artifacts
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-attach-artifacts:
+    name: Build and Attach Artifacts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Initialize Environment
+        shell: pwsh
+        run: ./config/make.ps1 -Task Init
+
+      - name: Build and Publish .NET Libraries
+        shell: pwsh
+        run: ./config/make.ps1 -Task DotnetSolution, ProjectByModule, DotnetClean, DotnetRestore, DotnetBuild, DotnetPublish
+
+      - name: Build SQL DACPACs
+        shell: pwsh
+        run: ./config/make.ps1 -Task SqlDacpac
+
+      - name: Create Artifact Archive
+        shell: pwsh
+        run: |
+          # obtener el nombre del modulo desde el nombre del directorio raiz del proyecto
+          $moduleName = Split-Path -Leaf -Path (Get-Location)
+          $version = "${{ github.ref_name }}"
+          $zipName = "$moduleName.$version.zip"
+          
+          # Create a temp directory for packaging
+          $packageDir = "package_temp"
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          
+          # Copy root module files
+          Copy-Item -Path "$moduleName.psd1" -Destination $packageDir
+          Copy-Item -Path "$moduleName.psm1" -Destination $packageDir
+          
+          # Copy Modules directory (recursive)
+          # Excluding source files (cs, csproj, sqlproj, etc) to keep it clean-ish, 
+          # but ensuring the built artifacts (libs/dlls, artifacts/dacpacs) are included.
+          # For simplicity and robustness, we copy everything and then remove known source extensions
+          # so that only runtime assets and build outputs remain in the package.
+          Copy-Item -Path "Modules" -Destination $packageDir -Recurse
+          
+          # Remove known source files from the package directory
+          $sourceExtensions = @(
+            '.cs',
+            '.csproj',
+            '.sql',
+            '.sqlproj'
+          )
+          Get-ChildItem -Path $packageDir -Recurse -File |
+            Where-Object { $sourceExtensions -contains $_.Extension } |
+            Remove-Item -Force
+          
+          # Zip the content
+          Compress-Archive -Path "$packageDir/*" -DestinationPath $zipName
+          
+          Add-Content -Path $env:GITHUB_ENV -Value "ARTIFACT_PATH=$zipName"
+
+      - name: Upload Release Artifact
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.ARTIFACT_PATH }}

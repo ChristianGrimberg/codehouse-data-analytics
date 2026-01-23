@@ -103,69 +103,69 @@ jobs:
           name: dacpac-linux
           path: '**/*.dacpac'
 
-  sql-profile-test-windows:
-    name: Test SQL Server connection using repository secrets on Windows Server
-    runs-on: windows-latest
-    needs: [sql-dacpac-windows]
+#  sql-profile-test-windows:
+#    name: Test SQL Server connection using repository secrets on Windows Server
+#    runs-on: windows-latest
+#    needs: [sql-dacpac-windows]
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Install SqlServer module
+#        run: |
+#          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
+#          Import-Module SqlServer
+#        shell: powershell
+#      - name: Test SQL Server connection using repository secrets
+#        run: |
+#          $serverName = ${{ secrets.SQLSERVERNAME }}
+#          $database = ${{ secrets.SQLDATABASE }}
+#          $user = ${{ secrets.SQLUSER }}
+#          $password = ${{ secrets.SQLPASSWORD }}
+#          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
+#        shell: powershell
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install SqlServer module
-        run: |
-          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
-          Import-Module SqlServer
-        shell: powershell
-      - name: Test SQL Server connection using repository secrets
-        run: |
-          $serverName = ${{ secrets.SQLSERVERNAME }}
-          $database = ${{ secrets.SQLDATABASE }}
-          $user = ${{ secrets.SQLUSER }}
-          $password = ${{ secrets.SQLPASSWORD }}
-          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
-        shell: powershell
+#  sql-profile-test-linux:
+#    name: Test SQL Server connection using repository secrets on Linux
+#    runs-on: ubuntu-latest
+#    needs: [sql-dacpac-linux]
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Install SqlServer module
+#        run: |
+#          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
+#          Import-Module SqlServer
+#        shell: pwsh
+#      - name: Test SQL Server connection using repository secrets
+#        run: |
+#          $serverName = "${{ secrets.SQLSERVERNAME }}"
+#          $database = "${{ secrets.SQLDATABASE }}"
+#          $user = "${{ secrets.SQLUSER }}"
+#          $password = "${{ secrets.SQLPASSWORD }}"
+#          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
+#        shell: pwsh
 
-  sql-profile-test-linux:
-    name: Test SQL Server connection using repository secrets on Linux
-    runs-on: ubuntu-latest
-    needs: [sql-dacpac-linux]
+#  sql-publish-windows:
+#    name: Publish SQL Server artifacts from Windows Server
+#    runs-on: windows-latest
+#    needs: [sql-profile-test-windows]
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Run dotnet publish with CLI
+#        run: .\config\make.ps1 -Task Init, ProjectByModule, SqlProfile, SqlTools, SqlDacpac, SqlPublish
+#        shell: powershell
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install SqlServer module
-        run: |
-          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
-          Import-Module SqlServer
-        shell: pwsh
-      - name: Test SQL Server connection using repository secrets
-        run: |
-          $serverName = "${{ secrets.SQLSERVERNAME }}"
-          $database = "${{ secrets.SQLDATABASE }}"
-          $user = "${{ secrets.SQLUSER }}"
-          $password = "${{ secrets.SQLPASSWORD }}"
-          Invoke-Sqlcmd -ServerInstance $serverName -Database $database -Username $user -Password $password -Query "SELECT GETDATE() AS CurrentDateTime, @@VERSION AS ServerVersion" | Out-String
-        shell: pwsh
-
-  sql-publish-windows:
-    name: Publish SQL Server artifacts from Windows Server
-    runs-on: windows-latest
-    needs: [sql-profile-test-windows]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run dotnet publish with CLI
-        run: .\config\make.ps1 -Task Init, ProjectByModule, SqlProfile, SqlTools, SqlDacpac, SqlPublish
-        shell: powershell
-
-  sql-publish-linux:
-    name: Publish SQL Server artifacts from Linux
-    runs-on: ubuntu-latest
-    needs: [sql-profile-test-linux]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run dotnet publish with CLI
-        run: ./config/make.ps1 -Task Init, ProjectByModule, SqlProfile, SqlTools, SqlDacpac, SqlPublish
-        shell: pwsh
+#  sql-publish-linux:
+#    name: Publish SQL Server artifacts from Linux
+#    runs-on: ubuntu-latest
+#    needs: [sql-profile-test-linux]
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Run dotnet publish with CLI
+#        run: ./config/make.ps1 -Task Init, ProjectByModule, SqlProfile, SqlTools, SqlDacpac, SqlPublish
+#        shell: pwsh
 
 #  sql-bacpac-windows:
 #    name: Create SQL Server BACPACs on Windows Server

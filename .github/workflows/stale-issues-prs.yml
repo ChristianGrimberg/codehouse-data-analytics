@@ -1,0 +1,44 @@
+name: Manage Stale Issues and PRs
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly el domingo a medianoche
+
+jobs:
+  stale-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: 60
+          days-before-close: 14
+          stale-issue-label: 'stale'
+          stale-issue-message: |
+            Este issue ha estado inactivo durante 60 dias.
+            
+            Para mantener el backlog limpio, procederemos a cerrarlo en 14 dias si no hay actividad.
+            
+            Si aun es relevante, por favor:
+            - Añade nueva informacion
+            - Asigna un milestone
+            - Comenta por que sigue siendo prioritario
+          close-issue-message: |
+            Este issue ha sido cerrado por inactividad.
+            
+            Si necesitas reactivarlo, por favor abre un nuevo issue referenciando este.
+          stale-pr-label: 'stale'
+          stale-pr-message: |
+            Este PR ha estado inactivo durante 60 dias.
+            
+            Procederemos a cerrarlo en 14 dias si no hay actividad.
+          close-pr-message: |
+            Este PR ha sido cerrado por inactividad.
+            Si aun es relevante, por favor abre un nuevo PR.
+          exempt-issue-labels: 'pinned,security'
+          exempt-pr-labels: 'pinned,security'
+          exempt-all-milestones: true
+          exempt-all-assignees: true
+          remove-stale-when-updated: true
