@@ -1,79 +1,89 @@
 # -> # =======================================
-# -> # Explicación de como funciona CODEOWNERS
+# -> # Explicacion de como funciona CODEOWNERS
 # -> # =======================================
 # -> 
-# -> # Las líneas que comenciencen con "#" serán anuladas.
+# -> # Las lineas que comenciencen con "#" seran anuladas.
 # -> 
-# -> # Podemos utilizar comodines utilizando el símbolo "*":
+# -> # Podemos utilizar comodines utilizando el simbolo "*":
 # -> * @default-codeowner
 # -> 
 # -> # Las reglas definidas al final del archivo tienen prioridad por sobre las anteriores.
 # ->
-# -> # Este ejemplo se aplicará a todos los archivos que terminen en ".rb":
+# -> # Este ejemplo se aplicara a todos los archivos que terminen en ".rb":
 # -> *.rb @ruby-owner
 # -> 
-# -> # Archivos que utilicen el símbolo `#` pueden utilizar el símbolo de escape previo con "\#":
+# -> # Archivos que utilicen el simbolo `#` pueden utilizar el simbolo de escape previo con "\#":
 # -> \#file.rb @owner-file
 # -> 
-# -> # Se pueden especificar múltiples CODEOWNERS separados por espacio o tabulación:
+# -> # Se pueden especificar multiples CODEOWNERS separados por espacio o tabulacion:
 # -> CODEOWNERS @multiple @owners	@tab-separated
 # -> 
-# -> # Se pueden utilizar los usuarios de GitHub/GitLab o su correspondiente correo electrónico.
-# -> # Lo que no exista será ignorado, por ejemplo @legal y janedoe@gitlab.com son propietarios de LICENCE
+# -> # Se pueden utilizar los usuarios de GitHub/GitLab o su correspondiente correo electronico.
+# -> # Lo que no exista sera ignorado, por ejemplo @legal y janedoe@gitlab.com son propietarios de LICENCE
 # -> LICENSE @legal this_does_not_match janedoe@gitlab.com
 # -> 
-# -> # Finalizando la ruta de un directorio con "/" indica que aplicará a todos los archivos contenidos
+# -> # Finalizando la ruta de un directorio con "/" indica que aplicara a todos los archivos contenidos
 # -> # y a sus subcarpetas con sus respectos archivos contenidos, bajo cualquier nivel:
 # -> /docs/ @all-docs
 # -> 
-# -> # Finalizando la ruta de un directorio con "/*" solo aplicará a los archivos que estén allí contenidos
-# -> # pero no a sus subcarpetas, es decir aplicará a "docs/index.md" pero no a "docs/projects/index.md":
+# -> # Finalizando la ruta de un directorio con "/*" solo aplicara a los archivos que esten alli contenidos
+# -> # pero no a sus subcarpetas, es decir aplicara a "docs/index.md" pero no a "docs/projects/index.md":
 # -> /docs/* @root-docs
 # -> 
-# -> # Nombrando la ruta por ejemplo como "lib/", aplicará sobre todas las carpetas de cualquier nivel
+# -> # Nombrando la ruta por ejemplo como "lib/", aplicara sobre todas las carpetas de cualquier nivel
 # -> # que conincidan con el nombre "lib":
 # -> lib/ @lib-owner
 # -> 
-# -> # Esto sólo aplicará al directorio "/config/" de la raíz del repositorio:
+# -> # Esto solo aplicara al directorio "/config/" de la raiz del repositorio:
 # -> /config/ @config-owner
 # -> 
 # -> # Si la ruta del directorio contiene espacios se debe utilizar el caracter de escape "\":
 # -> path\ with\ spaces/ @space-owner
 # ->
-# -> # Patrones o comodines que nieguen la aplicación de CODEOWNERS aún no está implementado
+# -> # Patrones o comodines que nieguen la aplicacion de CODEOWNERS aun no esta implementado
 # ->
 # -> # =====================
-# -> # Fin de la Explicación
+# -> # Fin de la Explicacion
 # -> # =====================
 
-# Los cambios en los archivos de configuracion del repositorio están protegidos por:
-.github/                @ChristianGrimberg
+# Los cambios en los archivos de configuracion del repositorio estan protegidos por:
+.github/                @ChristianGrimberg  @Copilot
 .gitignore              @ChristianGrimberg
 .gitattributes          @ChristianGrimberg
+.editorconfig           @ChristianGrimberg
+global.json             @ChristianGrimberg
+NuGet.config            @ChristianGrimberg
 CODEOWNERS              @ChristianGrimberg
-SUPPORT.md              @ChristianGrimberg  @PablitoSkrzypek
-CONTRIBUTING.md         @ChristianGrimberg  @PablitoSkrzypek
-LICENCE                 @ChristianGrimberg  @PablitoSkrzypek
+SUPPORT.md              @ChristianGrimberg
+CONTRIBUTING.md         @ChristianGrimberg
+LICENCE                 @ChristianGrimberg
 
-# Los cambios en los templates de documentación están protegidos por:
-*_TEMPLATE.md           @ChristianGrimberg  @PablitoSkrzypek
+# Los cambios en los templates de documentacion estan protegidos por:
+*_TEMPLATE.md           @ChristianGrimberg
 
-# Los cambios en las configuraciones de los editores de código están protegidos por:
-.vscode/                @ChristianGrimberg
-.devcontainer/          @ChristianGrimberg
-config/                 @ChristianGrimberg
+# Los cambios en las configuraciones de los editores de codigo estan protegidos por:
+.vscode/                @ChristianGrimberg  @Copilot
+.devcontainer/          @ChristianGrimberg  @Copilot
+config/                 @ChristianGrimberg  @Copilot
 
-# Los cambios en la documentación del repositorio están protegidos por:
-README.md               @ChristianGrimberg  @PablitoSkrzypek
-docs/                   @ChristianGrimberg  @PablitoSkrzypek
+# Los cambios en la documentacion del repositorio estan protegidos por:
+README.md               @ChristianGrimberg
+docs/                   @ChristianGrimberg
 
-# Los cambios en los modulos estan protegidos por
-Modules/                @ChristianGrimberg
-*.psm1                  @ChristianGrimberg
-*.psd1                  @ChristianGrimberg
-*.psd1                  @ChristianGrimberg
-*.cs                    @ChristianGrimberg
-*.csproj                @ChristianGrimberg
-*.sln                   @ChristianGrimberg
-*.dll                   @ChristianGrimberg
-*.xml                   @ChristianGrimberg
+# Los cambios en los archivos de proyectos de C# estan protegidos por
+*.cs                    @ChristianGrimberg  @Copilot
+*.csproj                @ChristianGrimberg  @Copilot
+*.sln                   @ChristianGrimberg  @Copilot
+*.dll                   @ChristianGrimberg  @Copilot
+*.xml                   @ChristianGrimberg  @Copilot
+
+# Los cambios en los archivos de los modulos de PowerShell estan protegidos por
+*.ps1                   @ChristianGrimberg  @Copilot
+*.psm1                  @ChristianGrimberg  @Copilot
+*.psd1                  @ChristianGrimberg  @Copilot
+*.psd1                  @ChristianGrimberg  @Copilot
+
+# Los cambios en los archivos de proyectos de SQL Server estan protegidos por
+*.sql                   @ChristianGrimberg  @Copilot
+*.publish.xml           @ChristianGrimberg  @Copilot
+*.sqlproj               @ChristianGrimberg  @Copilot
