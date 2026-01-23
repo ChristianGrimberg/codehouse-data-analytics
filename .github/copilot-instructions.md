@@ -4,6 +4,16 @@ description: Copilot Instructions
 
 # Copilot Instructions
 
+## AI Agent Orchestration
+
+This repository implements multi-agent orchestration for intelligent collaboration. As a GitHub Copilot, you have access to specialized agents defined in `.agent/`:
+
+- **Skills**: Specialized agents in `.agent/skills/` (PowerShell, .NET, SQL, CI/CD, Docker, Git, etc.)
+- **Rules**: Mandatory rules in `.agent/rules/` (Spanish Only, Centralized Docs, Security First)
+- **Documentation**: Complete documentation in `.agent/README.md`
+
+**IMPORTANT**: See `.agent/README.md` for complete details of the agent orchestration. Each agent has specific capabilities and tools that you can use depending on the task context.
+
 ## Repository Overview
 
 This repository contains:
@@ -20,7 +30,7 @@ This repository contains:
 * **Languages**: PowerShell (.ps1, .psm1, .psd1), C# (.cs, .csproj), SQL (.sql, .sqlproj, .publish.xml, .dacpac)
 * **Target Runtime**:
    * Windows with .NET Framework 4.8, PowerShell 5.1+ (Desktop & Core)
-   * Linux with .NET 9.x, PowerShell Core 7.x
+   * Linux with .NET 10.x, PowerShell Core 7.x
    * SQL Server 2019+
 
 ## Build System & Commands
@@ -28,7 +38,7 @@ This repository contains:
 ### Prerequisites
 
 - PowerShell 5.1+ (Windows PowerShell or PowerShell Core 7.x)
-- .NET SDK 9.x (configured in global.json)
+- .NET SDK 10.x (configured in global.json)
 - PowerShell modules: PSScriptAnalyzer
 - Internet access for NuGet package restore
 - All commands must be run from config/make.ps1 script
