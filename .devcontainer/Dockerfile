@@ -1,16 +1,19 @@
-FROM mcr.microsoft.com/devcontainers/dotnet:1-9.0
+FROM mcr.microsoft.com/devcontainers/dotnet:1-10.0
 
-# Add .NET global tools path
-ENV PATH $PATH:/home/vscode/.dotnet:/home/vscode/.dotnet/tools
+# Rutas de herramientas .NET
+ENV PATH $PATH:/home/vscode/.dotnet:/home/vscode/.dotnet/tools:/root/.dotnet/tools
 
-# Install SQL Tools: SQLPackage and sqlcmd
-COPY mssql/installSQLtools.sh installSQLtools.sh
-RUN bash ./installSQLtools.sh \
-     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
+# Limpiar repositorios viejos y preparar el sistema
+RUN rm -f /etc/apt/sources.list.d/yarn.list \
+    && apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    lsb-release ca-certificates curl gnupg2 unzip \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# [Optional] Uncomment this section to install additional OS packages.
+# Instalar herramientas de SQL
+COPY mssql/installSQLtools.sh /tmp/installSQLtools.sh
+RUN bash /tmp/installSQLtools.sh \
+     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/installSQLtools.sh
+
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends software-properties-common
-
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1

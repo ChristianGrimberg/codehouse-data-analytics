@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-mssql
 {
-	"name": "Coderhouse Data Analytics",
+	"name": "CoderHouse Data Analytics",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -18,26 +18,11 @@
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
-			"settings": { 
-				"mssql.connections": [
-					{
-						"server": "localhost,1433",
-						"database": "master",
-						"authenticationType": "SqlLogin",
-						"user": "sa",
-						"password": "${env:MSSQL_SA_PASSWORD}",
-						"emptyPasswordInput": false,
-						"savePassword": true,
-						"trustServerCertificate": true,
-						"profileName": "coderhouse-data-analytics"
-					}
-				]
-			},
+			"settings": {},
 			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"eamodio.gitlens",
-				"github.copilot-chat",
 				"github.vscode-pull-request-github",
 				"hediet.vscode-drawio",
 				"ms-dotnettools.csdevkit",
