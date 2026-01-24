@@ -64,7 +64,7 @@
   },
   "sql": {
     "connectionStrings": {
-      "linux": "Server=localhost,1433;Database=Nike_Sabado;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;",
+      "linux": "Server=localhost,1433;Database={0};User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;",
       "windows": "Data Source=(localdb)\\MSSQLLocalDB;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Application Name=\"SQL Server Management Studio\";Command Timeout=0"
     },
     "version": "0.0.0.1",

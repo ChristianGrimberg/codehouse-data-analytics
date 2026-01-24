@@ -4,7 +4,7 @@
     <IncludeCompositeObjects>False</IncludeCompositeObjects>
     <TargetDatabaseName>nike.database</TargetDatabaseName>
     <DeployScriptFileName>Nike.Database.sql</DeployScriptFileName>
-    <TargetConnectionString>Server=localhost,1433;Database=Nike_Sabado;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;</TargetConnectionString>
+    <TargetConnectionString>Server=localhost,1433;Database=nike.database;User ID=sa;Password=P@ssw0rd;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30;</TargetConnectionString>
     <ProfileVersionNumber>1</ProfileVersionNumber>
     <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
     <BackupDatabaseBeforeChanges>True</BackupDatabaseBeforeChanges>

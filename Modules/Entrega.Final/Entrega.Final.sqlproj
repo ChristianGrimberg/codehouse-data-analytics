@@ -4,6 +4,7 @@
 	<ItemGroup>
 		<Folder Include="Tables" />
 		<None Include="Entrega.Final.publish.xml" />
+		<PostDeploy Include="scripts\PostScriptDeployment.sql" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>Entrega.Final</PackageId>
@@ -12,7 +13,7 @@
 		<Company>Coderhouse Data Analytics</Company>
 		<DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
 		<ModelCollation>1033, CI</ModelCollation>
-		<ProjectGuid>{99224D71-BCA1-44BD-991D-5B395740AF26}</ProjectGuid>
+		<ProjectGuid>{F1FDC184-60FF-4AC8-A9BA-C03F9E333869}</ProjectGuid>
 		<RunSqlCodeAnalysis>False</RunSqlCodeAnalysis>
 	</PropertyGroup>
 </Project>
