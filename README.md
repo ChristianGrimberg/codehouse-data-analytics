@@ -1,6 +1,6 @@
 # **Análisis de tendencias y predicción de la demanda en la importación de neumáticos**
 
-## *Autor: [Christian Grimberg](https://github.com/ChristianGrimberg)*
+## *Autor: [[Christian Grimberg](https://github.com/ChristianGrimberg)](https://github.com/ChristianGrimberg)*
 
 ## *Comisión: 79120*
 

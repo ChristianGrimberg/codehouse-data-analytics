@@ -167,4 +167,4 @@ Para agregar nuevos agentes especializados:
 
 **Última actualización**: 2026-01-21  
 **Versión**: 1.0  
-**Mantenido por**: Christian Grimberg
+**Mantenido por**: [Christian Grimberg](https://github.com/ChristianGrimberg)

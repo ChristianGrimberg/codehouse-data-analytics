@@ -294,5 +294,5 @@ Para agregar nuevos agentes:
 
 **Versión**: 1.0  
 **Última actualización**: 2026-01-21  
-**Mantenido por**: Christian Grimberg  
+**Mantenido por**: [Christian Grimberg](https://github.com/ChristianGrimberg)  
 **Estándar**: OpenCode Agent Orchestration

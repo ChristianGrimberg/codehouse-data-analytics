@@ -346,7 +346,7 @@ git commit -m ":memo: (docs) actualizar README con nuevos comandos"
 - Incluir comentarios descriptivos:
   ```sql
   -- Descripción del procedimiento en español
-  -- Autor: Christian Grimberg
+  -- Autor: [Christian Grimberg](https://github.com/ChristianGrimberg)
   -- Fecha: Enero 2026
   
   CREATE PROCEDURE [dbo].[usp_ExampleProcedure]
@@ -516,4 +516,4 @@ Un PR será aprobado si:
 
 **Versión**: 1.0  
 **Última actualización**: 2026-01-22  
-**Mantenido por**: Christian Grimberg
+**Mantenido por**: [Christian Grimberg](https://github.com/ChristianGrimberg)

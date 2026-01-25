@@ -228,7 +228,7 @@ Ver [README.md](README.md) para documentación completa.
 ## 🙏 Contributors
 
 - @copilot (GitHub Copilot)
-- Christian Grimberg
+- [Christian Grimberg](https://github.com/ChristianGrimberg)
 
 ---
 

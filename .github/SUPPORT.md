@@ -366,8 +366,7 @@ Tu feedback es valioso. Comparte:
 
 ### Equipo de Desarrollo
 
-- **Organización**: Christian Grimberg
-- **Equipo GitHub**: https://github.com/orgs/ChristianGrimberg
+- **Autor**: [Christian Grimberg](https://github.com/ChristianGrimberg)
 
 ### Reportar Problemas de Seguridad
 
@@ -414,4 +413,4 @@ El equipo opera en horario de Argentina (UTC-3):
 
 **Versión**: 1.0  
 **Última actualización**: 2026-01-22  
-**Mantenido por**: Christian Grimberg
+**Mantenido por**: [Christian Grimberg](https://github.com/ChristianGrimberg)

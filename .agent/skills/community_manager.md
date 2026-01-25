@@ -351,7 +351,7 @@ jobs:
 ```markdown
 # 🎉 Título de nuevo release
 
-Nos complace anunciar el lanzamiento de la versión 1.0.10.0 de Christian Grimberg.
+Nos complace anunciar el lanzamiento de la versión 1.0.10.0 de [Christian Grimberg](https://github.com/ChristianGrimberg).
 
 ## ✨ Novedades
 

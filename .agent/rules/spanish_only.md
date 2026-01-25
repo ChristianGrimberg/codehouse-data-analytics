@@ -94,7 +94,7 @@ public class TimesheetRecord
 #### Comentarios SQL
 ```sql
 -- Procedimiento para ....
--- Autor: Christian Grimberg
+-- Autor: [Christian Grimberg](https://github.com/ChristianGrimberg)
 -- Fecha: Enero de 2026
 
 CREATE PROCEDURE [dbo].[usp_nombre_procedimiento]
