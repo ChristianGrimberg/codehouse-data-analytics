@@ -5,6 +5,7 @@
 		<Folder Include="Tables" />
 		<Build Remove="Queries\**\*.sql" />
 		<None Include="03.Entrega.publish.xml" />
+		<PostDeploy Include="scripts\PostScriptDeployment.sql" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>03.Entrega</PackageId>
